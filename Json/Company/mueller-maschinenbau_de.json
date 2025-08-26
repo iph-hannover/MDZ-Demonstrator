@@ -1,0 +1,65 @@
+[
+  {
+    "filename": "Mail_01.eml",
+    "date": "2021-04-02T10:14:00+02:00",
+    "from_email": "thomas.reuter@mueller-maschinenbau.de",
+    "subject": "Anfrage zu IoT-Sensormodulen",
+    "body": "Sehr geehrter Herr Schuster,\n\nwir haben von einem Geschäftspartner von Ihnen gehört und sind auf der Suche nach IoT-Sensormodulen für die Zustandsüberwachung unserer CNC-Fräsmaschinen.\nKönnen Sie uns bitte nähere Informationen zu Ihrem Modell SmartTrack S200 und den möglichen Schnittstellen zur Einbindung in unser bestehendes System zukommen lassen?\n\nMit freundlichen Grüßen\nThomas Reuter\nLeiter Instandhaltung"
+  },
+  {
+    "filename": "Mail_02.eml",
+    "date": "2021-04-05T08:42:00+02:00",
+    "from_email": "markus.schuster@innovatek-solutions.de",
+    "subject": "Re: Anfrage zu IoT-Sensormodulen",
+    "body": "Sehr geehrter Herr Reuter,\n\nvielen Dank für Ihre Anfrage. Im Anhang finden Sie das Datenblatt zum SmartTrack S200 sowie eine Übersicht zu den verfügbaren Schnittstellen (Ethernet, WLAN, MQTT-Protokoll).\nFür eine Integration in Ihr System bieten wir zusätzlich unsere DataFlow Pro Plattform an, die eine direkte Analyse und Visualisierung Ihrer Maschinendaten ermöglicht.\n\nGerne können wir Ihnen ein individuelles Angebot erstellen.\n\nFreundliche Grüße\nMarkus Schuster\nTechnischer Vertrieb"
+  },
+  {
+    "filename": "Mail_03.eml",
+    "date": "2021-04-15T14:17:00+02:00",
+    "from_email": "thomas.reuter@mueller-maschinenbau.de",
+    "subject": "Bestellung SmartTrack S200",
+    "body": "Sehr geehrter Herr Schuster,\n\nwir möchten 10 Stück SmartTrack S200 sowie die zugehörige DataFlow Pro Plattform (Cloud-Zugang für 1 Jahr) bestellen.\nBitte bestätigen Sie uns den Liefertermin.\n\nBeste Grüße\nThomas Reuter"
+  },
+  {
+    "filename": "Mail_04.eml",
+    "date": "2021-04-16T09:05:00+02:00",
+    "from_email": "markus.schuster@innovatek-solutions.de",
+    "subject": "Re: Bestellung SmartTrack S200",
+    "body": "Sehr geehrter Herr Reuter,\n\nvielen Dank für Ihre Bestellung. Die Lieferung der Sensormodule erfolgt bis zum 22. April 2021, die Zugangsdaten zur DataFlow Pro Plattform senden wir Ihnen separat per E-Mail zu.\n\nFreundliche Grüße\nMarkus Schuster"
+  },
+  {
+    "filename": "Mail_05.eml",
+    "date": "2021-07-18T15:49:00+02:00",
+    "from_email": "thomas.reuter@mueller-maschinenbau.de",
+    "subject": "Reklamation – Defektes Sensormodul",
+    "body": "Sehr geehrtes Support-Team,\n\neines unserer SmartTrack S200-Module zeigt seit gestern keine Messwerte mehr an. Wir haben bereits den Standort getauscht und das Modul neu gestartet, ohne Erfolg.\nKönnen Sie einen Austausch veranlassen?\n\nVielen Dank und Grüße\nThomas Reuter"
+  },
+  {
+    "filename": "Mail_06.eml",
+    "date": "2021-07-19T08:33:00+02:00",
+    "from_email": "jana.weber@innovatek-solutions.de",
+    "subject": "Re: Reklamation – Defektes Sensormodul",
+    "body": "Sehr geehrter Herr Reuter,\n\nwir senden Ihnen heute ein Ersatzmodul zu. Bitte verwenden Sie das beiliegende Retourenlabel, um das defekte Gerät an uns zurückzuschicken.\n\nFreundliche Grüße\nJana Weber\nKundenservice"
+  },
+  {
+    "filename": "Mail_07.eml",
+    "date": "2021-11-11T09:58:00+01:00",
+    "from_email": "thomas.reuter@mueller-maschinenbau.de",
+    "subject": "Probleme nach Softwareupdate",
+    "body": "Guten Tag,\n\nnach dem gestrigen Update der DataFlow Pro Plattform haben wir vereinzelt Ausfälle in der Datenübertragung festgestellt. Können Sie bitte prüfen, ob dies mit der neuen Version zusammenhängt?\n\nVielen Dank\nThomas Reuter"
+  },
+  {
+    "filename": "Mail_08.eml",
+    "date": "2021-11-12T08:15:00+01:00",
+    "from_email": "jan.becker@innovatek-solutions.de",
+    "subject": "Re: Probleme nach Softwareupdate",
+    "body": "Sehr geehrter Herr Reuter,\n\ntatsächlich gab es in der letzten Version ein Problem mit der MQTT-Schnittstelle. Wir haben heute Morgen einen Hotfix eingespielt – die Übertragung sollte nun wieder stabil laufen.\n\nVielen Dank für Ihren Hinweis.\n\nFreundliche Grüße\nJan Becker\nTechnischer Support"
+  },
+  {
+    "filename": "Mail_09.eml",
+    "date": "2023-01-25T13:24:00+01:00",
+    "from_email": "thomas.reuter@mueller-maschinenbau.de",
+    "subject": "Anfrage Erweiterung Predictive Maintenance",
+    "body": "Sehr geehrter Herr Schuster,\n\nwir möchten unsere Sensorflotte um die Funktion Predictive Maintenance Plus erweitern. Bitte senden Sie uns ein Angebot zu.\n\nBeste Grüße\nThomas Reuter"
+  }
+]

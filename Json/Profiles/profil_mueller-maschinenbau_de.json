@@ -1,0 +1,16 @@
+[
+  {
+    "company_name": "Mueller Maschinenbau",
+    "contacts": [
+      {
+        "name": "Thomas Reuter",
+        "email": "thomas.reuter@mueller-maschinenbau.de"
+      }
+    ],
+    "products": [
+      "SmartTrack S200",
+      "DataFlow Pro Plattform"
+    ],
+    "summary": "Mueller Maschinenbau zeigte zunächst Interesse an IoT-Sensormodulen (SmartTrack S200) und bestellte 10 Stück zusammen mit der DataFlow Pro Plattform. Es kam zu Problemen mit einem defekten Sensormodul, welches ersetzt wurde. Nach einem Softwareupdate gab es temporäre Probleme mit der Datenübertragung, welche durch einen Hotfix behoben wurden. Aktuell besteht Interesse an der Erweiterung Predictive Maintenance Plus."
+  }
+]

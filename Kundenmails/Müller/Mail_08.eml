@@ -1,0 +1,30 @@
+From: Jan Becker <jan.becker@innovatek-solutions.de>
+Date: Fri, 12 Nov 2021 08:15:00 +0100
+To: Thomas Reuter <thomas.reuter@mueller-maschinenbau.de>
+Subject: Re: Probleme nach Softwareupdate
+Message-ID: <20211112-1@innovatek-solutions.de>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
+
+Sehr geehrter Herr Reuter,
+
+tatsächlich gab es in der letzten Version ein Problem mit der MQTT-Schnittstelle. Wir haben heute Morgen einen Hotfix eingespielt – die Übertragung sollte nun wieder stabil laufen.
+
+Vielen Dank für Ihren Hinweis.
+
+Freundliche Grüße
+Jan Becker
+Technischer Support
+
+-----Ursprüngliche Nachricht-----
+Von: Thomas Reuter <thomas.reuter@mueller-maschinenbau.de>
+Gesendet: Donnerstag, 11. November 2021 09:58
+An: Technik <technik@innovatek-solutions.de>
+Betreff: Probleme nach Softwareupdate
+
+Guten Tag,
+
+nach dem gestrigen Update der DataFlow Pro Plattform haben wir vereinzelt Ausfälle in der Datenübertragung festgestellt. Können Sie bitte prüfen, ob dies mit der neuen Version zusammenhängt?
+
+Vielen Dank
+Thomas Reuter

@@ -1,0 +1,37 @@
+[
+  {
+    "filename": "Mail_01.eml",
+    "date": "2021-01-12T08:37:00+01:00",
+    "from_email": "Thomas Berger t.berger@technofab.de",
+    "subject": "Bedarf 2021 – SmartTrack Module",
+    "body": "Hi Markus,\n\nwie jedes Jahr zum Start – wir brauchen wieder eine größere Lieferung.\nBitte schick uns 250 SmartTrack S200 Module plus 50 Predictive Maintenance Plus Lizenzen.\nLieferung am besten bis Mitte Februar, dann passt das in unsere Umbaupläne.\n\nDanke dir & Grüße\nThomas"
+  },
+  {
+    "filename": "Mail_02.eml",
+    "date": "2021-01-12T10:02:00+01:00",
+    "from_email": "Markus Schuster markus.schuster@innovatek-solutions.de",
+    "subject": "Re: Bedarf 2021 – SmartTrack Module",
+    "body": "Hi Thomas,\n\nsuper, machen wir wie gehabt.\nDie 250 Module + 50 Lizenzen gehen nächste Woche in die Produktion, Lieferung planmäßig bis 15. Februar 2021.\nDie Konditionen bleiben natürlich wie bisher.\n\nIch melde mich, sobald die Spedition alles übernommen hat.\n\nBeste Grüße\nMarkus"
+  },
+  {
+    "filename": "Mail_03.eml",
+    "date": "2021-04-14T09:18:00+02:00",
+    "from_email": "Thomas Berger t.berger@technofab.de",
+    "subject": "Sondermodul für Linie 7",
+    "body": "Moin Markus,\n\nkleine Zwischenfrage: Habt ihr für die neue Linie 7 schon ein passendes Sondermodul auf Basis S200?\nWir brauchen eins, das bei höherer Hitze stabil läuft (bis 95 °C Umgebung).\nFalls verfügbar, bitte direkt 10 Stück auf unsere Rahmenvereinbarung packen.\n\nGruß\nThomas"
+  },
+  {
+    "filename": "Mail_04.eml",
+    "date": "2021-04-14T11:05:00+02:00",
+    "from_email": "Markus Schuster markus.schuster@innovatek-solutions.de",
+    "subject": "Re: Sondermodul für Linie 7",
+    "body": "Hey Thomas,\n\nja, wir haben das S200-HX Modul, ausgelegt bis 100 °C Umgebung.\nPasst also perfekt für deine Linie 7.\n\nIch nehme dir 10 Stück mit ins Paket, Lieferung geht zusammen mit den nächsten Serienmodulen raus.\n\nBeste Grüße\nMarkus"
+  },
+  {
+    "filename": "Mail_05.eml",
+    "date": "2022-12-06T15:22:00+01:00",
+    "from_email": "Thomas Berger t.berger@technofab.de",
+    "subject": "Bestellung Jahresbedarf 2023",
+    "body": "Servus Markus,\n\nwie besprochen:\n\n300 SmartTrack S200 Standard\n\n70 Predictive Maintenance Plus\n\n20 S200-HX Sondermodule\n\nLieferung bitte bis Ende Januar 2023, dann starten wir sauber ins neue Jahr.\n\nDanke dir!\nThomas"
+  }
+]

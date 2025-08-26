@@ -1,0 +1,17 @@
+[
+  {
+    "company_name": "Bergmann Automation",
+    "contacts": [
+      {
+        "name": "Andreas Vogt",
+        "email": "a.vogt@bergmann-automation.de"
+      }
+    ],
+    "products": [
+      "SmartTrack S200",
+      "Predictive Maintenance Plus",
+      "SmartTrack Care Plus"
+    ],
+    "summary": "Bergmann Automation zeigte Interesse an den SmartTrack S200 Sensormodulen und beauftragte deren Integration in ihre Produktionslinie. Sie bestellten 25 Stück und schlossen einen Wartungsvertrag (SmartTrack Care Plus) ab.  Später meldeten sie einen Defekt an einem Modul und erhielten ein Austauschgerät.  Anschließend zeigten sie Interesse an der Erweiterung \"Predictive Maintenance Plus\" und verlängerten den bestehenden Wartungsvertrag."
+  }
+]

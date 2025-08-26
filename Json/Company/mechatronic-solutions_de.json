@@ -1,0 +1,65 @@
+[
+  {
+    "filename": "Mail_01.eml",
+    "date": "2022-03-07T10:15:00+01:00",
+    "from_email": "sabine.klein@mechatronic-solutions.de",
+    "subject": "Anfrage SmartTrack Modul",
+    "body": "Sehr geehrter Herr Schuster,\n\nwir prüfen derzeit mögliche Erweiterungen unserer Produktionsüberwachung und interessieren uns für Ihre SmartTrack Module.  \nKönnten Sie uns bitte die technischen Spezifikationen sowie Informationen zur Kompatibilität mit bestehenden Maschinen zusenden?\n\nMit freundlichen Grüßen\nSabine Klein\nLeiterin Produktion\nMechatronic Solutions GmbH"
+  },
+  {
+    "filename": "Mail_02.eml",
+    "date": "2022-03-07T14:42:00+01:00",
+    "from_email": "markus.schuster@innovatek-solutions.de",
+    "subject": "Re: Anfrage SmartTrack Modul",
+    "body": "Sehr geehrte Frau Klein,\n\nvielen Dank für Ihre Anfrage. Anbei finden Sie die technischen Datenblätter unserer SmartTrack Module sowie Informationen zur Integration in bestehende Produktionsanlagen.  \nFür Rückfragen stehe ich Ihnen jederzeit zur Verfügung.\n\nFreundliche Grüße\nMarkus Schuster\nTechnischer Vertrieb\nInnovatek Solutions"
+  },
+  {
+    "filename": "Mail_03.eml",
+    "date": "2022-03-08T09:05:00+01:00",
+    "from_email": "sabine.klein@mechatronic-solutions.de",
+    "subject": "Rückfrage zu SmartTrack Modul",
+    "body": "Sehr geehrter Herr Schuster,\n\nvielen Dank für die Unterlagen.  \nKönnten Sie mir noch Informationen zu den verfügbaren Schnittstellen (OPC-UA, Modbus, etc.) sowie zu den Lizenzmodellen zusenden?  \n\nMit freundlichen Grüßen\nSabine Klein"
+  },
+  {
+    "filename": "Mail_04.eml",
+    "date": "2022-03-08T14:20:00+01:00",
+    "from_email": "markus.schuster@innovatek-solutions.de",
+    "subject": "Angebot SmartTrack Module",
+    "body": "Sehr geehrte Frau Klein,\n\nanbei finden Sie ein detailliertes Angebot für die SmartTrack Module inklusive aller Schnittstellenoptionen sowie Lizenzmodelle.  \nGern stehe ich für ein telefonisches Beratungsgespräch zur Verfügung, um die für Ihre Anlage passende Konfiguration zu besprechen.\n\nFreundliche Grüße\nMarkus Schuster\nTechnischer Vertrieb"
+  },
+  {
+    "filename": "Mail_05.eml",
+    "date": "2022-03-10T11:12:00+01:00",
+    "from_email": "sabine.klein@mechatronic-solutions.de",
+    "subject": "Re: Angebot SmartTrack Module",
+    "body": "Sehr geehrter Herr Schuster,\n\nvielen Dank für das Angebot. Wir prüfen derzeit intern die Kostenstruktur.  \nKönnen Sie uns außerdem die Unterschiede zwischen den Standard- und Premium-Lizenzmodellen noch einmal zusammenfassen?\n\nMit freundlichen Grüßen\nSabine Klein"
+  },
+  {
+    "filename": "Mail_06.eml",
+    "date": "2022-03-10T16:45:00+01:00",
+    "from_email": "markus.schuster@innovatek-solutions.de",
+    "subject": "Erläuterung Lizenzmodelle SmartTrack Module",
+    "body": "Sehr geehrte Frau Klein,\n\ngerne erläutere ich Ihnen die Lizenzmodelle:\n\n- **Standard-Lizenz:** Grundfunktionen der SmartTrack Module, 1 Jahr Support, keine erweiterten Schnittstellen.  \n- **Premium-Lizenz:** Alle Funktionen, unbegrenzter Telefonsupport, erweiterte Schnittstellen (OPC-UA, Modbus, MQTT), Firmware-Updates inklusive.\n\nWir können auch ein kurzfristiges Testpaket bereitstellen, damit Sie die Module vorab evaluieren können.\n\nFreundliche Grüße\nMarkus Schuster"
+  },
+  {
+    "filename": "Mail_07.eml",
+    "date": "2022-03-14T09:45:00+01:00",
+    "from_email": "sabine.klein@mechatronic-solutions.de",
+    "subject": "Testpaket SmartTrack Module",
+    "body": "Sehr geehrter Herr Schuster,\n\ndas Testpaket klingt interessant.  \nKönnten Sie uns die Bedingungen und die Dauer des Testpakets zusenden?\n\nMit freundlichen Grüßen\nSabine Klein"
+  },
+  {
+    "filename": "Mail_08.eml",
+    "date": "2022-03-14T14:30:00+01:00",
+    "from_email": "markus.schuster@innovatek-solutions.de",
+    "subject": "Testpaket SmartTrack Module – Details",
+    "body": "Sehr geehrte Frau Klein,\n\ndas Testpaket umfasst 2 SmartTrack Module für die Dauer von 30 Tagen.  \nDie Lieferung erfolgt kostenfrei, eine Rücksendung des Testpakets ist mit beiliegendem Retourenlabel möglich.  \nWährend des Testzeitraums steht Ihnen unser Supportteam für Einrichtung und Fragen zur Verfügung.\n\nFreundliche Grüße\nMarkus Schuster"
+  },
+  {
+    "filename": "Mail_09.eml",
+    "date": "2022-03-16T10:15:00+01:00",
+    "from_email": "sabine.klein@mechatronic-solutions.de",
+    "subject": "Re: Testpaket SmartTrack Module – Details",
+    "body": "Sehr geehrter Herr Schuster,\n\nvielen Dank für die Informationen. Wir werden das Testpaket intern prüfen und uns danach wieder bei Ihnen melden.  \n\nMit freundlichen Grüßen\nSabine Klein"
+  }
+]

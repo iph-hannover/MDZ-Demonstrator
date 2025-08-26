@@ -1,0 +1,72 @@
+[
+  {
+    "filename": "Mail_01.eml",
+    "date": "2019-03-12T09:43:00+01:00",
+    "from_email": "m.hartmann@technomech.de",
+    "subject": "Anfrage – SmartTrack S200",
+    "body": "Sehr geehrter Herr Schuster,\n\nwir hatten auf der Hannover Messe kurz über Ihr SmartTrack S200-System gesprochen. \nBitte senden Sie mir ein Angebot für 5 Stück einschließlich Installation sowie Informationen zur Lieferzeit.\n\nMit freundlichen Grüßen\nMichael Hartmann\nLeiter Instandhaltung\nTechnoMech GmbH"
+  },
+  {
+    "filename": "Mail_02.eml",
+    "date": "2019-03-12T14:18:00+01:00",
+    "from_email": "markus.schuster@innovatek-solutions.de",
+    "subject": "Re: Anfrage – SmartTrack S200",
+    "body": "Sehr geehrter Herr Hartmann,\n\nvielen Dank für Ihre Anfrage.\n\nIm Anhang finden Sie unser Angebot für 5 Stück SmartTrack S200 inklusive Installation, \nsowie die Lieferzeit von aktuell ca. 3 Wochen ab Bestelleingang.\n\nFür Rückfragen stehe ich Ihnen jederzeit gerne zur Verfügung.\n\nFreundliche Grüße\nMarkus Schuster\nTechnischer Vertrieb"
+  },
+  {
+    "filename": "Mail_03.eml",
+    "date": "2019-03-20T11:05:00+01:00",
+    "from_email": "m.hartmann@technomech.de",
+    "subject": "Re: Anfrage – SmartTrack S200",
+    "body": "Sehr geehrter Herr Schuster,\n\nbesten Dank für Ihr Angebot.  \nWir prüfen dieses intern und kommen auf Sie zu.\n\nMit freundlichen Grüßen\nMichael Hartmann"
+  },
+  {
+    "filename": "Mail_04.eml",
+    "date": "2020-11-16T09:58:00+01:00",
+    "from_email": "m.hartmann@technomech.de",
+    "subject": "Anfrage – DataFlow Pro Plattform",
+    "body": "Sehr geehrter Herr Schuster,\n\nkönnten Sie mir bitte ein Angebot für die DataFlow Pro Plattform (Cloud-Zugang, 1 Jahr) \ninklusive Implementierung zukommen lassen? \n\nBitte auch eine kurze Übersicht der Funktionen beifügen.\n\nVielen Dank und freundliche Grüße\nMichael Hartmann"
+  },
+  {
+    "filename": "Mail_05.eml",
+    "date": "2020-11-16T13:12:00+01:00",
+    "from_email": "markus.schuster@innovatek-solutions.de",
+    "subject": "Re: Anfrage – DataFlow Pro Plattform",
+    "body": "Sehr geehrter Herr Hartmann,\n\nim Anhang finden Sie unser Angebot für die DataFlow Pro Plattform mit 1 Jahr Cloud-Zugang \nund Implementierung vor Ort.  \nGerne können wir auch eine kurze Online-Demo anbieten, um die Funktionen zu zeigen.\n\nFreundliche Grüße\nMarkus Schuster"
+  },
+  {
+    "filename": "Mail_06.eml",
+    "date": "2020-11-19T10:34:00+01:00",
+    "from_email": "m.hartmann@technomech.de",
+    "subject": "Re: Anfrage – DataFlow Pro Plattform",
+    "body": "Sehr geehrter Herr Schuster,\n\nvielen Dank.  \nIch bespreche das mit unserem Geschäftsführer und melde mich wieder.\n\nMit freundlichen Grüßen\nMichael Hartmann"
+  },
+  {
+    "filename": "Mail_07.eml",
+    "date": "2023-01-10T08:51:00+01:00",
+    "from_email": "m.hartmann@technomech.de",
+    "subject": "Anfrage – Wartungsvertrag Care Basic",
+    "body": "Sehr geehrter Herr Schuster,\n\nbitte senden Sie mir ein Angebot für den Wartungsvertrag „Care Basic“ für eine Laufzeit von 12 Monaten, \ninkl. Übersicht der enthaltenen Leistungen.\n\nVielen Dank und freundliche Grüße\nMichael Hartmann"
+  },
+  {
+    "filename": "Mail_08.eml",
+    "date": "2023-01-10T14:48:00+01:00",
+    "from_email": "markus.schuster@innovatek-solutions.de",
+    "subject": "Re: Anfrage – Wartungsvertrag Care Basic",
+    "body": "Sehr geehrter Herr Hartmann,\n\nanbei erhalten Sie unser Angebot für den Wartungsvertrag \"Care Basic\".  \nDieser umfasst jährliche Inspektionen, Software-Updates und telefonischen Support während unserer Geschäftszeiten.\n\nDetails zu Leistungen, Preisen und Vertragslaufzeit finden Sie in der beigefügten PDF.\n\nFür Rückfragen stehe ich Ihnen gerne jederzeit zur Verfügung.\n\nFreundliche Grüße  \nMarkus Schuster  \nTechnischer Vertrieb"
+  },
+  {
+    "filename": "Mail_09.eml",
+    "date": "2023-01-13T15:22:00+01:00",
+    "from_email": "m.hartmann@technomech.de",
+    "subject": "Re: Anfrage – Wartungsvertrag Care Basic",
+    "body": "Sehr geehrter Herr Schuster,\n\nvielen Dank für die schnelle Zusendung des Angebots.  \nWir müssen die Entscheidung noch intern abstimmen und werden uns bei Ihnen melden, sobald wir hierzu ein finales Go haben.\n\nMit freundlichen Grüßen\nMichael Hartmann"
+  },
+  {
+    "filename": "Mail_10.eml",
+    "date": "2023-01-26T09:15:00+01:00",
+    "from_email": "markus.schuster@innovatek-solutions.de",
+    "subject": "Nachfrage – Angebot Wartungsvertrag Care Basic",
+    "body": "Sehr geehrter Herr Hartmann,\n\nich hoffe, Sie hatten inzwischen Gelegenheit, unser Angebot zum Wartungsvertrag \"Care Basic\" intern zu prüfen.  \nGibt es bereits eine Entscheidung oder benötigen Sie weitere Informationen, um die nächsten Schritte einzuleiten?\n\nGerne können wir auch einen kurzen Telefontermin vereinbaren, um offene Fragen zu klären.\n\nFreundliche Grüße  \nMarkus Schuster  \nTechnischer Vertrieb"
+  }
+]

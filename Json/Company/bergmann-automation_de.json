@@ -1,0 +1,79 @@
+[
+  {
+    "filename": "Mail_01.eml",
+    "date": "2020-03-03T09:42:00+01:00",
+    "from_email": "a.vogt@bergmann-automation.de",
+    "subject": "Anfrage SmartTrack S200",
+    "body": "Sehr geehrter Herr Schuster,\n\nwir haben Ihren Stand auf der Hannover Messe 2019 besucht und waren besonders von Ihren SmartTrack S200 Sensormodulen beeindruckt.\n\nKönnten Sie uns bitte ein Angebot für 25 Stück inklusive Integration in unsere Produktionslinie zukommen lassen?\n\nMit freundlichen Grüßen\nAndreas Vogt\nLeiter Instandhaltung"
+  },
+  {
+    "filename": "Mail_02.eml",
+    "date": "2020-03-03T13:15:00+01:00",
+    "from_email": "markus.schuster@innovatek-solutions.de",
+    "subject": "Re: Anfrage SmartTrack S200",
+    "body": "Sehr geehrter Herr Vogt,\n\nvielen Dank für Ihre Anfrage. Anbei finden Sie unser Angebot für 25 SmartTrack S200 Sensormodule inklusive Einbindung in Ihre Produktionslinie.\n\nDer Liefertermin wäre ca. drei Wochen nach Auftragseingang.\n\nFreundliche Grüße\nMarkus Schuster\nTechnischer Vertrieb"
+  },
+  {
+    "filename": "Mail_03.eml",
+    "date": "2020-03-10T08:04:00+01:00",
+    "from_email": "a.vogt@bergmann-automation.de",
+    "subject": "Bestellung SmartTrack S200",
+    "body": "Sehr geehrter Herr Schuster,\n\nhiermit bestellen wir verbindlich 25 Stück SmartTrack S200 gemäß Ihrem Angebot vom 03.03.2020.\n\nBitte bestätigen Sie uns den voraussichtlichen Liefertermin.\n\nMit freundlichen Grüßen\nAndreas Vogt"
+  },
+  {
+    "filename": "Mail_04.eml",
+    "date": "2020-04-27T09:18:00+02:00",
+    "from_email": "a.vogt@bergmann-automation.de",
+    "subject": "Anfrage Wartungsvertrag",
+    "body": "Sehr geehrter Herr Schuster,\n\nwir möchten die neuen Module im Rahmen eines Wartungsvertrags absichern. Bitte senden Sie uns ein Angebot für einen jährlichen Servicevertrag inklusive Software-Updates.\n\nMit freundlichen Grüßen\nAndreas Vogt"
+  },
+  {
+    "filename": "Mail_052.eml",
+    "date": "2020-04-27T12:02:00+02:00",
+    "from_email": "markus.schuster@innovatek-solutions.de",
+    "subject": "Re: Anfrage Wartungsvertrag",
+    "body": "Sehr geehrter Herr Vogt,\n\ngerne unterbreiten wir Ihnen ein Angebot für einen Wartungsvertrag \"SmartTrack Care Plus\". Dieser umfasst jährliche Systeminspektionen, Firmware-Updates und bevorzugten Telefonsupport.\n\nDetails finden Sie im Anhang.\n\nFreundliche Grüße\nMarkus Schuster\nTechnischer Vertrieb"
+  },
+  {
+    "filename": "Mail_06.eml",
+    "date": "2020-07-15T14:21:00+02:00",
+    "from_email": "a.vogt@bergmann-automation.de",
+    "subject": "Reklamation – Ausfall SmartTrack S200 Modul",
+    "body": "Sehr geehrtes Support-Team,\n\neines unserer S200-Module hat gestern den Betrieb eingestellt. Auch nach Neustart und Standortwechsel funktioniert es nicht.\n\nBitte teilen Sie mir mit, wie wir weiter verfahren sollen.\n\nMit freundlichen Grüßen\nAndreas Vogt"
+  },
+  {
+    "filename": "Mail_07.eml",
+    "date": "2020-07-16T08:11:00+02:00",
+    "from_email": "jana.weber@innovatek-solutions.de",
+    "subject": "Re: Reklamation – Ausfall SmartTrack S200 Modul",
+    "body": "Sehr geehrter Herr Vogt,\n\nwir senden Ihnen heute ein Ersatzmodul per Expresslieferung zu. Bitte verwenden Sie das beiliegende Retourenlabel für das defekte Gerät.\n\nFreundliche Grüße\nJana Weber\nKundenservice"
+  },
+  {
+    "filename": "Mail_08.eml",
+    "date": "2021-04-28T10:27:00+02:00",
+    "from_email": "a.vogt@bergmann-automation.de",
+    "subject": "Anfrage – Predictive Maintenance Plus",
+    "body": "Sehr geehrter Herr Schuster,\n\nwir interessieren uns für Ihr Erweiterungspaket \"Predictive Maintenance Plus\" und möchten gerne prüfen, ob es mit unserer bestehenden SmartTrack S200-Installation kompatibel ist.\n\nKönnen Sie uns bitte dazu technische Informationen zukommen lassen?\n\nMit freundlichen Grüßen\nAndreas Vogt"
+  },
+  {
+    "filename": "Mail_09.eml",
+    "date": "2021-04-28T14:09:00+02:00",
+    "from_email": "markus.schuster@innovatek-solutions.de",
+    "subject": "Re: Anfrage – Predictive Maintenance Plus",
+    "body": "Sehr geehrter Herr Vogt,\n\nvielen Dank für Ihre Anfrage. Die Erweiterung \"Predictive Maintenance Plus\" ist vollständig mit Ihrer aktuellen Installation kompatibel.\n\nIm Anhang finden Sie die technischen Details sowie eine Übersicht der Implementierungsschritte.\n\nFreundliche Grüße\nMarkus Schuster\nTechnischer Vertrieb"
+  },
+  {
+    "filename": "Mail_10.eml",
+    "date": "2022-07-04T09:50:00+02:00",
+    "from_email": "a.vogt@bergmann-automation.de",
+    "subject": "Vertragsverlängerung Wartungsvertrag",
+    "body": "Sehr geehrter Herr Schuster,\n\nunser aktueller Wartungsvertrag läuft im September aus. Wir möchten diesen um weitere 24 Monate verlängern.\n\nBitte senden Sie uns die aktualisierten Vertragsunterlagen.\n\nMit freundlichen Grüßen\nAndreas Vogt"
+  },
+  {
+    "filename": "Mail_11.eml",
+    "date": "2022-07-04T12:05:00+02:00",
+    "from_email": "markus.schuster@innovatek-solutions.de",
+    "subject": "Re: Vertragsverlängerung Wartungsvertrag",
+    "body": "Sehr geehrter Herr Vogt,\n\nvielen Dank für Ihre Mitteilung. Wir haben die Vertragsunterlagen entsprechend angepasst und Ihnen im Anhang zugesendet.\n\nDer neue Vertragszeitraum beginnt am 01.10.2022.\n\nFreundliche Grüße\nMarkus Schuster\nTechnischer Vertrieb"
+  }
+]
