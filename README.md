@@ -1,5 +1,6 @@
 # MDZ-Demonstrator
 Kundenportal
+
 Ein interaktives Tool zur Verwaltung von Kundenmails und -profilen, inklusive eines Chatbots zur Beantwortung von Kundenfragen.
 
 📂 Projektstruktur
