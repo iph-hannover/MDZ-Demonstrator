@@ -47,4 +47,34 @@ Ein interaktives Tool zur Verwaltung von Kundenmails und -profilen, inklusive ei
 -Chatbot: Fragen direkt an Kundenprofile stellen.  
 -E-Mail Upload: Neue .eml-Dateien hochladen → automatisch verarbeitet.  
 -Kundenprofile aktualisieren: Alle JSONs verarbeiten → Profile aktualisieren.  
--Firmenübersichten & Einzelprofile: Überblick über Kundeninformationen & E-Mail-Verläufe.  
+-Firmenübersichten & Einzelprofile: Überblick über Kundeninformationen & E-Mail-Verläufe.
+
+---
+
+## Beispiel-Workflow
+
+1. **E-Mails hochladen**
+   - Navigiere in der App zu "📧 Emails verwalten".
+   - Lade eine oder mehrere `.eml`-Dateien hoch.
+   - Die E-Mails werden automatisch verarbeitet und als JSON gespeichert.
+
+2. **E-Mails löschen (optional)**
+   - Wähle unter "📧 Emails verwalten" die zu löschenden E-Mails aus.
+   - Klicke auf "🗑️ Ausgewählte löschen".
+   - Die E-Mails und zugehörigen JSONs werden entfernt, Verläufe neu generiert.
+
+3. **Kundenprofile aktualisieren**
+   - Wechsle zu "🏢 KI-Kundenübersicht".
+   - Klicke auf "🔄 Kundenprofile aktualisieren".
+   - Alle Profile werden aus den aktuellen E-Mail-JSONs neu erstellt.
+
+4. **Profile und E-Mail-Verläufe ansehen**
+   - Sieh dir die Übersicht aller Kundenprofile an.
+   - Klicke auf ein Profil für Details und den E-Mail-Verlauf.
+
+5. **Chatbot nutzen**
+   - Wechsle zu "💻 KI-Chatbot".
+   - Stelle Fragen zu Kunden, Produkten oder E-Mail-Verläufen.
+   - Der Chatbot antwortet auf Basis der aktuellen Profile.
+
+---
