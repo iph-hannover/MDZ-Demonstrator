@@ -94,6 +94,7 @@ Die Anwendung öffnet sich automatisch im Browser unter `http://localhost:8501`.
 - **Speicherplatz:** ~10GB (8GB für LLM + 2GB für Anwendung)
 - **Internet:** Nur für initiale Installation erforderlich
 - **Prozessor:** x64-Architektur (Intel/AMD)
+- **Graphikkarte:** Nvidia RTX 4090 empfohlen
 
 ---
 
@@ -166,16 +167,5 @@ streamlit run gui.py --server.port 8502
 ## Lizenz
 
 MIT License - Siehe LICENSE-Datei für Details.
-
-## Support
-
-Bei Fragen oder Problemen:
-- GitHub Issues: [https://github.com/iph-hannover/MDZ-Demonstrator/issues](https://github.com/iph-hannover/MDZ-Demonstrator/issues)
-- E-Mail: [support@mdz-hannover.de](mailto:support@mdz-hannover.de)
-
----
-
-**Mittelstand-Digital Zentrum Hannover**  
-Ein Projekt zur Digitalisierung im Mittelstand mit Schwerpunkt auf KI-gestützter Datenanalyse.
 
 ---
