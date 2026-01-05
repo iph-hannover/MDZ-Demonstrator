@@ -13,41 +13,61 @@ Ein interaktives Tool zur Verwaltung von Kundenmails und -profilen, inklusive KI
 ### 1. Ollama installieren (Grundvoraussetzung)
 
 **Windows:**
+
 - Lade Ollama von [https://ollama.ai](https://ollama.ai) herunter
 - Führe das Installationsprogramm aus
 - Öffne eine neue Eingabeaufforderung und teste: `ollama --version`
 
 **macOS:**
+
 ```bash
 brew install ollama
 ```
 
 **Linux:**
+
 ```bash
 curl -fsSL https://ollama.ai/install.sh | sh
 ```
 
 ### 2. LLM-Modell herunterladen
+
 ```bash
 ollama pull gemma3:12b
 ```
+
 ⚠️ **Wichtig:** Dieser Download ist ca. 8GB groß und kann je nach Internetverbindung längere Zeit dauern.
 
 ### 3. Repository klonen
+
 ```bash
 git clone https://github.com/iph-hannover/MDZ-Demonstrator.git
 cd MDZ-Demonstrator
 ```
 
 ### 4. Python-Abhängigkeiten installieren
+
+**Schnellinstallation (Windows):**
+Für eine automatische Installation unter Windows kann die mitgelieferte Batch-Datei verwendet werden:
+
+```bash
+MDZ_KI-Demonstrator_EmAIls2Profile.bat
+```
+
+Das Skript richtet automatisch eine virtuelle Umgebung ein, installiert alle erforderlichen Pakete und startet die Anwendung.
+
+**Manuelle Installation:**
+
 ```bash
 pip install -r requirements.txt
 ```
 
 ### 5. Anwendung starten
+
 ```bash
 streamlit run gui.py
 ```
+
 Die Anwendung öffnet sich automatisch im Browser unter `http://localhost:8501`.
 
 ## Projektstruktur
@@ -62,6 +82,7 @@ Die Anwendung öffnet sich automatisch im Browser unter `http://localhost:8501`.
 ## Funktionen
 
 ### 1. **E-Mail-Verwaltung**
+
 - **Upload:** Hochladen von `.eml`-Dateien über die Oberfläche
 - **Verarbeitung:** Automatische Extraktion von Metadaten (Absender, Empfänger, Betreff, Datum)
 - **Bereinigung:** E-Mail-Body wird von Antwort-Ketten befreit
@@ -69,6 +90,7 @@ Die Anwendung öffnet sich automatisch im Browser unter `http://localhost:8501`.
 - **Löschung:** Einzelne E-Mails können ausgewählt und gelöscht werden
 
 ### 2. **KI-gestützte Profilerstellung**
+
 - **Automatische Analyse:** Das LLM `gemma3:12b` analysiert E-Mail-Verläufe
 - **Profil-Generierung:** Erstellt strukturierte Kundenprofile mit:
   - Firmenname und Kontaktdaten
@@ -77,12 +99,14 @@ Die Anwendung öffnet sich automatisch im Browser unter `http://localhost:8501`.
 - **Cache-Management:** Automatisches Leeren des Caches bei Aktualisierungen
 
 ### 3. **Intelligenter Chatbot**
+
 - **Kontextbasierte Antworten:** Beantwortet Fragen auf Basis der gespeicherten Profile
 - **Fuzzy-Matching:** Erkennt Firmennamen auch bei Tippfehlern
 - **Chatverlauf:** Gespräche werden während der Session gespeichert
 - **Beispielfragen:** Vorgefertigte Fragen für einfachen Einstieg
 
 ### 4. **Benutzeroberfläche**
+
 - **Responsive Design:** Funktioniert auf Desktop und Tablet
 - **Sidebar-Navigation:** Übersichtliche Menüführung
 - **Firmen-Kacheln:** Schneller Zugriff auf einzelne Kundenprofile
@@ -128,24 +152,28 @@ Die Anwendung öffnet sich automatisch im Browser unter `http://localhost:8501`.
 ## Fehlerbehebung
 
 **Ollama läuft nicht:**
+
 ```bash
 # Ollama-Service starten
 ollama serve
 ```
 
 **Modell nicht gefunden:**
+
 ```bash
 # Modell erneut herunterladen
 ollama pull gemma3:12b
 ```
 
 **Port bereits belegt:**
+
 ```bash
 # Streamlit auf anderem Port starten
 streamlit run gui.py --server.port 8502
 ```
 
 **Speicherprobleme:**
+
 - Verwende kleineres Modell: `ollama pull gemma3:8b`
 - Passe MODEL-Variable in `gui.py` entsprechend an
 
