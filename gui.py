@@ -11,7 +11,8 @@ from collections import defaultdict
 import subprocess
 import re
 import difflib
-
+import shutil
+import json_repair
 
 # =====================================
 # ⚡ Globale Initialisierung: Profile
@@ -21,10 +22,39 @@ UPLOAD_FOLDER = "data"
 EML_MAIL_FOLDER = UPLOAD_FOLDER + "/emails/eml"
 JSON_MAIL_FOLDER = UPLOAD_FOLDER + "/emails/json"
 JSON_PROFILE_FOLDER = UPLOAD_FOLDER + "/profiles/json"
+# Pfad zu Ihren Original-Daten auf dem Server
+SERVER_SOURCE_ROOT = "/home/user2/MDZ-Demonstrator/Kundenmails_Original"
 
+# -------------------------------
+# ⚙️ Sidebar Einstellungen
+# -------------------------------
+st.sidebar.markdown("---")
+st.sidebar.subheader("🧠 KI-Modell")
 
-# Zu verwendendes LLM-Modell als globale Variable definieren
-MODEL = "gemma3:12b"
+# Mapping: Anzeige-Name -> Ollama-Modell-Tag
+model_map = {
+    "Gemma 3 (12B) - Schnell & Neu": "gemma3:12b",
+    "Llama 3.3 (70B) - Maximale Intelligenz": "llama3.3:70b",
+    "DeepSeek R1 (32B) - Logik & Reasoning": "deepseek-r1:32b",
+    "Qwen 2.5 Coder (32B) - Struktur-Experte": "qwen2.5-coder:32b",
+}
+
+model_option = st.sidebar.selectbox(
+    "Modell wählen:",
+    options=list(model_map.keys()),
+    index=0  # Standard: Gemma 3
+)
+
+# Globale Variable setzen
+MODEL = model_map[model_option]
+
+# Info-Box anzeigen
+if "Llama" in model_option:
+    st.sidebar.caption("ℹ️ Sehr mächtig, aber braucht viel RAM.")
+elif "DeepSeek" in model_option:
+    st.sidebar.caption("ℹ️ 'Denkt' vor der Antwort (Chain-of-Thought).")
+elif "Qwen" in model_option:
+    st.sidebar.caption("ℹ️ Sehr gut für striktes JSON-Format.")
 
 # Eigene Domains (für Erkennung von Antwort-Mails)
 MY_DOMAINS = ["innovatek-solutions.de"]
@@ -301,6 +331,8 @@ import streamlit as st
 import base64, pathlib
 
 
+
+
 # etwas Platz lassen, damit der Footer nicht Content überlappt
 st.markdown(
     """
@@ -476,50 +508,174 @@ if page == "Startseite":
 # -------------------------------
 # Seite: 1 Emails verwalten
 # -------------------------------
+# if page == "Emails verwalten":
+#     st.title("📧 Emails verwalten")
+
+#     os.makedirs(os.path.join(UPLOAD_FOLDER, selected_company), exist_ok=True)
+
+#     st.divider()
+#     st.subheader("📤 Emails hochladen")
+
+#     # Mehrfach-Upload erlauben
+#     uploaded_files = st.file_uploader(
+#         "📎 Emails (.eml) hochladen", type=["eml"], accept_multiple_files=True
+#     )
+
+#     # if uploaded_files:
+#     #     for uploaded_file in uploaded_files:
+#     #         save_path = os.path.join(
+#     #             UPLOAD_FOLDER, selected_company, uploaded_file.name
+#     #         )
+
+#     #         with open(save_path, "wb") as f:
+#     #             f.write(uploaded_file.getbuffer())
+#     #         # st.toast(f"✅ '{uploaded_file.name}' gespeichert in '{selected_company}'")
+
+#     if uploaded_files:
+#         new_uploads = []
+#         for uploaded_file in uploaded_files:
+#             save_path = os.path.join(
+#                 UPLOAD_FOLDER, selected_company, uploaded_file.name
+#             )
+#             with open(save_path, "wb") as f:
+#                 f.write(uploaded_file.getbuffer())
+#             new_uploads.append(uploaded_file.name)
+
+#         # Toast nur einmal für alle neuen Uploads
+#         if new_uploads:
+#             st.toast(
+#                 f"✅ {len(new_uploads)} Datei(en) gespeichert in '{selected_company}'"
+#             )
+
+#     # 🚀 Direkt verarbeiten (nur diesen Firmenordner!)
+#     company_folder = os.path.join(UPLOAD_FOLDER, selected_company)
+#     process_uploaded_emails(company_folder, JSON_MAIL_FOLDER)
+#     manage_uploaded_emails(company_folder, JSON_MAIL_FOLDER)
+
+
+# -------------------------------
+# Seite: 1 Emails verwalten
+# -------------------------------
 if page == "Emails verwalten":
     st.title("📧 Emails verwalten")
 
-    os.makedirs(os.path.join(UPLOAD_FOLDER, selected_company), exist_ok=True)
+    # Zielordner für die ausgewählte Firma
+    target_folder = os.path.join(UPLOAD_FOLDER, selected_company)
+    os.makedirs(target_folder, exist_ok=True)
 
     st.divider()
-    st.subheader("📤 Emails hochladen")
+    st.subheader("📥 Emails hinzufügen")
 
-    # Mehrfach-Upload erlauben
-    uploaded_files = st.file_uploader(
-        "📎 Emails (.eml) hochladen", type=["eml"], accept_multiple_files=True
-    )
+    # Tabs für Auswahl: Upload (PC) oder Server (Lokal)
+    tab1, tab2 = st.tabs(["📤 Upload vom PC", "📂 Import vom Server"])
 
-    # if uploaded_files:
-    #     for uploaded_file in uploaded_files:
-    #         save_path = os.path.join(
-    #             UPLOAD_FOLDER, selected_company, uploaded_file.name
-    #         )
+    # --- TAB 1: Klassischer Upload ---
+    with tab1:
+        uploaded_files = st.file_uploader(
+            "📎 Emails (.eml) von deinem Computer wählen", 
+            type=["eml"], 
+            accept_multiple_files=True
+        )
 
-    #         with open(save_path, "wb") as f:
-    #             f.write(uploaded_file.getbuffer())
-    #         # st.toast(f"✅ '{uploaded_file.name}' gespeichert in '{selected_company}'")
+        if uploaded_files:
+            new_uploads = []
+            for uploaded_file in uploaded_files:
+                save_path = os.path.join(target_folder, uploaded_file.name)
+                with open(save_path, "wb") as f:
+                    f.write(uploaded_file.getbuffer())
+                new_uploads.append(uploaded_file.name)
+            
+            if new_uploads:
+                st.success(f"✅ {len(new_uploads)} Datei(en) hochgeladen.")
+                # Automatisch verarbeiten triggern
+                process_uploaded_emails(target_folder, JSON_MAIL_FOLDER)
+                st.rerun()
 
-    if uploaded_files:
-        new_uploads = []
-        for uploaded_file in uploaded_files:
-            save_path = os.path.join(
-                UPLOAD_FOLDER, selected_company, uploaded_file.name
-            )
-            with open(save_path, "wb") as f:
-                f.write(uploaded_file.getbuffer())
-            new_uploads.append(uploaded_file.name)
+    # --- TAB 2: Server Import (Aus Unterordnern) ---
+    with tab2:
+        st.write(f"📂 Quelle: `{SERVER_SOURCE_ROOT}`")
 
-        # Toast nur einmal für alle neuen Uploads
-        if new_uploads:
-            st.toast(
-                f"✅ {len(new_uploads)} Datei(en) gespeichert in '{selected_company}'"
-            )
+        # Prüfen, ob der Pfad existiert
+        if not os.path.exists(SERVER_SOURCE_ROOT):
+            st.error(f"Der Pfad `{SERVER_SOURCE_ROOT}` wurde nicht gefunden.")
+        else:
+            # 1. Unterordner (Kunden) auflisten
+            try:
+                subfolders = [
+                    d for d in os.listdir(SERVER_SOURCE_ROOT) 
+                    if os.path.isdir(os.path.join(SERVER_SOURCE_ROOT, d))
+                ]
+            except PermissionError:
+                st.error("⚠️ Keine Leserechte für diesen Ordner.")
+                subfolders = []
 
-    # 🚀 Direkt verarbeiten (nur diesen Firmenordner!)
-    company_folder = os.path.join(UPLOAD_FOLDER, selected_company)
-    process_uploaded_emails(company_folder, JSON_MAIL_FOLDER)
-    manage_uploaded_emails(company_folder, JSON_MAIL_FOLDER)
+            if not subfolders:
+                st.info("Keine Unterordner gefunden.")
+            else:
+                # Dropdown zur Auswahl des Kunden-Ordners
+                selected_subfolder = st.selectbox(
+                    "1️⃣ Wähle einen Kunden-Ordner vom Server:", 
+                    options=sorted(subfolders)
+                )
 
+                # Pfad zum ausgewählten Unterordner
+                full_source_path = os.path.join(SERVER_SOURCE_ROOT, selected_subfolder)
+
+                # 2. EML-Dateien darin finden
+                eml_files_in_folder = [
+                    f for f in os.listdir(full_source_path) 
+                    if f.lower().endswith(".eml")
+                ]
+
+                if not eml_files_in_folder:
+                    st.warning("📭 Keine .eml Dateien in diesem Ordner.")
+                else:
+                    st.write(f"Gefundene Emails: **{len(eml_files_in_folder)}**")
+                    
+                    # Checkbox: Alles auswählen?
+                    select_all = st.checkbox("Alle auswählen", value=True)
+                    
+                    if select_all:
+                        files_to_import = eml_files_in_folder
+                    else:
+                        files_to_import = st.multiselect(
+                            "2️⃣ Wähle die zu importierenden Dateien:", 
+                            eml_files_in_folder
+                        )
+
+                    # 3. Import-Button
+                    if st.button(f"📥 {len(files_to_import)} Emails importieren"):
+                        if not files_to_import:
+                            st.warning("Bitte mindestens eine Datei auswählen.")
+                        else:
+                            success_count = 0
+                            progress_bar = st.progress(0)
+                            
+                            for idx, fname in enumerate(files_to_import):
+                                src = os.path.join(full_source_path, fname)
+                                dst = os.path.join(target_folder, fname) # target_folder ist der Ordner in der App (data/...)
+                                
+                                try:
+                                    shutil.copy2(src, dst)
+                                    success_count += 1
+                                except Exception as e:
+                                    st.error(f"Fehler bei {fname}: {e}")
+                                
+                                # Balken aktualisieren
+                                progress_bar.progress((idx + 1) / len(files_to_import))
+                            
+                            st.success(f"✅ {success_count} Emails erfolgreich aus '{selected_subfolder}' importiert!")
+                            
+                            # Automatische Verarbeitung triggern
+                            process_uploaded_emails(target_folder, JSON_MAIL_FOLDER)
+                            
+                            # Kurze Pause für UX, dann Reload
+                            import time
+                            time.sleep(1)
+                            st.rerun()
+
+    # 🚀 Anzeige und Lösch-Verwaltung (bleibt wie vorher, aber unterhalb der Tabs)
+    manage_uploaded_emails(target_folder, JSON_MAIL_FOLDER)
 
 # -------------------------------
 # Seite 2: KI-Kundenübersicht
@@ -529,90 +685,326 @@ elif page == "KI-Kundenübersicht":
 
     os.makedirs(JSON_PROFILE_FOLDER, exist_ok=True)
 
+    # if st.button("🔄 Kundenprofile aktualisieren"):
+    #     # 1) Cache leeren, damit keine veralteten Daten verwendet werden
+    #     try:
+    #         st.cache_data.clear()
+    #     except Exception:
+    #         pass
+
+    #     # 2) Alte Profile löschen
+    #     removed_profiles = 0
+    #     for p in glob.glob(os.path.join(JSON_PROFILE_FOLDER, "*.json")):
+    #         try:
+    #             os.remove(p)
+    #             removed_profiles += 1
+    #         except Exception:
+    #             pass
+    #     if removed_profiles:
+    #         st.info(f"🗑️ {removed_profiles} bestehende Profil(e) gelöscht")
+
+    #     # 3) Neue Profile aus vorhandenen Email-JSONs generieren
+    #     st.info("Starte Verarbeitung der Emails…")
+
+    #     for filepath in glob.glob(os.path.join(JSON_MAIL_FOLDER, "*.json")):
+    #         filename = os.path.basename(filepath)
+    #         output_file = os.path.join(JSON_PROFILE_FOLDER, f"profil_{filename}")
+
+    #         st.write(f"📥 Verarbeite `{filename}` ...")
+
+    #         # Emails laden
+    #         with open(filepath, "r", encoding="utf-8") as f:
+    #             try:
+    #                 emails = json.load(f)
+    #             except Exception as e:
+    #                 st.error(f"⚠️ Fehler beim Laden von {filename}: {e}")
+    #                 continue
+
+    #         # Prompt vorbereiten
+    #         prompt = f"""
+    #         Du bekommst eine Liste von Emails im JSON-Format.
+    #         Erstelle für jede Kundenfirma nur ein Profil.
+
+    #         Jedes Profil enthält:
+    #         - Name des Unternehmens
+    #         - alle eindeutigen Kontakte (Name + Email)
+    #         - eine Liste der angefragten oder bestellten Produkte
+    #         - Summary des Email-Verlaufs (max. 8 Sätze). Die Zusammenfassung muss summary heißen.
+
+    #         Regeln:
+    #         - Die Kontakte der Firma Innovatek Solutions sollen nicht aufgenommen werden.
+    #         - Das heißt, eine Kunden-Emailadresse kann nicht auf @innovatek-solutions.de enden.
+    #         - Gib das Ergebnis ausschließlich als gültiges JSON-Array zurück, ohne Markdown.
+
+    #         Hier sind die Emails:
+    #         {json.dumps(emails, ensure_ascii=False, indent=2)}
+    #         """
+
+    #         # LLM ausführen
+    #         result = subprocess.run(
+    #             ["ollama", "run", MODEL],
+    #             input=prompt.encode("utf-8"),
+    #             capture_output=True,
+    #         )
+    #         output_text = result.stdout.decode("utf-8").strip()
+
+    #         # Eventuelle ```json``` Tags entfernen
+    #         cleaned_output = re.sub(r"```json|```", "", output_text).strip()
+
+    #         # JSON parsen
+    #         try:
+    #             kundenprofil = json.loads(cleaned_output)
+    #         except json.JSONDecodeError:
+    #             st.warning(
+    #                 f"⚠️ JSON-Parsing fehlgeschlagen bei {filename}, Rohtext gespeichert."
+    #             )
+    #             kundenprofil = {"raw_output": output_text}
+
+    #         # Speichern
+    #         with open(output_file, "w", encoding="utf-8") as f:
+    #             json.dump(kundenprofil, f, indent=2, ensure_ascii=False)
+
+    #         st.success(f"✅ Profil gespeichert: `{output_file}`")
+
+    #     st.success("🎉 Alle Kundenprofile wurden aktualisiert!")
+    #     st.cache_data.clear()
+    #     st.rerun()
+
     if st.button("🔄 Kundenprofile aktualisieren"):
-        # 1) Cache leeren, damit keine veralteten Daten verwendet werden
+        try:
+            st.cache_data.clear()
+        except Exception:
+            pass
+        
+        # --- SCHRITT 1: Altes entfernen ---
+        # Gibt es ein Profil, zu dem gar keine Email-Datei mehr existiert?
+        
+        all_profiles = glob.glob(os.path.join(JSON_PROFILE_FOLDER, "profil_*.json"))
+        deleted_orphans = 0
+        
+        for p_path in all_profiles:
+            # Dateinamen extrahieren: "data/.../profil_firma_a.json" -> "firma_a.json"
+            p_filename = os.path.basename(p_path)
+            expected_mail_filename = p_filename.replace("profil_", "")
+            expected_mail_path = os.path.join(JSON_MAIL_FOLDER, expected_mail_filename)
+            
+            # Wenn die Email-Datei NICHT existiert, weg mit dem Profil!
+            if not os.path.exists(expected_mail_path):
+                os.remove(p_path)
+                deleted_orphans += 1
+                
+        if deleted_orphans > 0:
+            st.warning(f"🗑️ {deleted_orphans} verwaiste Profile gelöscht (da keine Emails mehr vorhanden).")
+
+        # --- SCHRITT 2: Generierung ---
+        status_container = st.container()
+        
+        generated_count = 0
+        skipped_count = 0
+        errors = []
+
+        mail_files = glob.glob(os.path.join(JSON_MAIL_FOLDER, "*.json"))
+        progress_bar = st.progress(0)
+
+        for i, mail_filepath in enumerate(mail_files):
+            filename = os.path.basename(mail_filepath)
+            profile_filename = f"profil_{filename}"
+            profile_filepath = os.path.join(JSON_PROFILE_FOLDER, profile_filename)
+            
+            # Entscheidung: Neu generieren?
+            should_generate = False
+            if not os.path.exists(profile_filepath):
+                should_generate = True
+            else:
+                if os.path.getmtime(mail_filepath) > os.path.getmtime(profile_filepath):
+                    should_generate = True
+            
+            if should_generate:
+                # --- 🚀 HIER IST DAS NEUE LIVE-FEEDBACK ---
+                with status_container.status(f"⚙️ Verarbeite **{filename}**...", expanded=True) as status:
+                    
+                    st.write("📖 Lese Emails ein...")
+                    with open(mail_filepath, "r", encoding="utf-8") as f:
+                        try:
+                            current_emails = json.load(f)
+                            # Optional: Nur die letzten 20 Emails nehmen
+                            if len(current_emails) > 20:
+                                current_emails = current_emails[-20:]
+                        except Exception as e:
+                            st.error(f"Dateifehler: {e}")
+                            continue
+
+                    st.write(f"🧠 {model_option} analysiert Inhalte...")
+                    prompt = f"""
+                    Du bist ein professioneller Assistent für den deutschen Mittelstand.
+                    Analysiere die Kommunikation in den folgenden Emails.
+
+                    Erstelle ein JSON-Profil. 
+                    ⚠️ WICHTIG: 
+                    1. Alle Texte (besonders 'summary' und 'products') MÜSSEN zwingend auf DEUTSCH verfasst sein.
+                    2. Ignoriere bei 'contacts' alle Mitarbeiter von @{MY_DOMAINS}.
+                    3. Nimm nur externe Ansprechpartner auf.
+
+                    Das JSON muss exakt diese Struktur haben:
+                    {{
+                        "company_name": "Name der Firma",
+                        "contacts": [{{ "name": "Vorname Nachname", "email": "email@adresse.de" }}],
+                        "products": ["Produkt A", "Dienstleistung B"],
+                        "summary": "Eine präzise Zusammenfassung des Verlaufs auf Deutsch (max. 8 Sätze)."
+                    }}
+
+                    Antworte AUSSCHLIESSLICH mit dem JSON-Objekt. Keine Einleitung, kein Markdown.
+
+                    Emails:
+                    {json.dumps(current_emails, ensure_ascii=False)}
+                    """
+
+                    try:
+                        result = subprocess.run(
+                            ["ollama", "run", MODEL],
+                            input=prompt.encode("utf-8"),
+                            capture_output=True
+                        )
+                        output_text = result.stdout.decode("utf-8").strip()
+
+                        st.write("🔧 Repariere & Speichere JSON...")
+                        
+                        # --- 🛠️ HIER IST DER NEUE JSON REPAIR ---
+                        # Entfernt Markdown ```json ... ``` Reste
+                        clean_text = re.sub(r"```json|```", "", output_text).strip()
+                        # json_repair ist viel toleranter als json.loads
+                        kundenprofil = json_repair.loads(clean_text)
+
+                        with open(profile_filepath, "w", encoding="utf-8") as f:
+                            json.dump(kundenprofil, f, indent=2, ensure_ascii=False)
+                        
+                        generated_count += 1
+                        status.update(label=f"✅ {filename} fertiggestellt!", state="complete", expanded=False)
+                        
+                    except Exception as e:
+                        status.update(label=f"❌ Fehler bei {filename}", state="error")
+                        errors.append(f"{filename}: {e}")
+            else:
+                skipped_count += 1
+            
+            progress_bar.progress((i + 1) / len(mail_files))
+
+        st.success(f"Fertig! {generated_count} neu erstellt, {skipped_count} aktuell.")
+        if errors:
+            st.error(f"Fehler aufgetreten: {errors}")
+        
+        if generated_count > 0:
+            import time
+            time.sleep(1)
+            st.rerun()
+
+
+        # Cache leeren
         try:
             st.cache_data.clear()
         except Exception:
             pass
 
-        # 2) Alte Profile löschen
-        removed_profiles = 0
-        for p in glob.glob(os.path.join(JSON_PROFILE_FOLDER, "*.json")):
-            try:
-                os.remove(p)
-                removed_profiles += 1
-            except Exception:
-                pass
-        if removed_profiles:
-            st.info(f"🗑️ {removed_profiles} bestehende Profil(e) gelöscht")
+        st.info("Prüfe auf Änderungen in den Email-Daten...")
+        
+        # Zähler für Statistik
+        generated_count = 0
+        skipped_count = 0
+        
+        # Fortschrittsbalken initialisieren
+        mail_files = glob.glob(os.path.join(JSON_MAIL_FOLDER, "*.json"))
+        progress_bar = st.progress(0)
+        
+        for i, mail_filepath in enumerate(mail_files):
+            # Dateinamen auflösen
+            filename = os.path.basename(mail_filepath)       # z.B. firma_a.json
+            profile_filename = f"profil_{filename}"          # z.B. profil_firma_a.json
+            profile_filepath = os.path.join(JSON_PROFILE_FOLDER, profile_filename)
+            
+            # Entscheidung: Neu generieren?
+            should_generate = False
+            
+            if not os.path.exists(profile_filepath):
+                # Fall A: Profil existiert noch gar nicht
+                should_generate = True
+                st.write(f"🆕 Erstelle neues Profil für `{filename}` ...")
+            else:
+                # Fall B: Vergleich der Zeitstempel (mtime)
+                mail_mtime = os.path.getmtime(mail_filepath)
+                profile_mtime = os.path.getmtime(profile_filepath)
+                
+                if mail_mtime > profile_mtime:
+                    should_generate = True
+                    st.write(f"🔄 Emails geändert. Aktualisiere `{filename}` ...")
+                else:
+                    should_generate = False
+            
+            # --- Generierung (nur wenn nötig) ---
+            if should_generate:
+                # 1. Emails laden
+                with open(mail_filepath, "r", encoding="utf-8") as f:
+                    try:
+                        current_emails = json.load(f)
+                    except Exception as e:
+                        st.error(f"Fehler bei {filename}: {e}")
+                        continue
+                
+                # OPTIONAL: Hier Emails begrenzen (z.B. letzte 20) um Speed zu erhöhen
+                # current_emails = current_emails[-20:] if len(current_emails) > 20 else current_emails
 
-        # 3) Neue Profile aus vorhandenen Email-JSONs generieren
-        st.info("Starte Verarbeitung der Emails…")
+                # 2. Prompt bauen
+                prompt = f"""
+                Du bekommst eine Liste von Emails im JSON-Format.
+                Erstelle für diese Kundenfirma ein Profil.
 
-        for filepath in glob.glob(os.path.join(JSON_MAIL_FOLDER, "*.json")):
-            filename = os.path.basename(filepath)
-            output_file = os.path.join(JSON_PROFILE_FOLDER, f"profil_{filename}")
+                Das Profil muss enthalten:
+                - Name des Unternehmens ("company_name")
+                - Liste der Kontakte (Name + Email)
+                - Liste der Produkte/Themen
+                - Zusammenfassung des Verlaufs ("summary", max 8 Sätze)
 
-            st.write(f"📥 Verarbeite `{filename}` ...")
-
-            # Emails laden
-            with open(filepath, "r", encoding="utf-8") as f:
+                Gib das Ergebnis NUR als JSON zurück.
+                
+                Emails:
+                {json.dumps(current_emails, ensure_ascii=False, indent=2)}
+                """
+                
+                # 3. LLM aufrufen
                 try:
-                    emails = json.load(f)
+                    result = subprocess.run(
+                        ["ollama", "run", MODEL],
+                        input=prompt.encode("utf-8"),
+                        capture_output=True
+                        # timeout=120 # Optional: Timeout setzen
+                    )
+                    output_text = result.stdout.decode("utf-8").strip()
+                    
+                    # JSON Cleaning
+                    cleaned_output = re.sub(r"```json|```", "", output_text).strip()
+                    kundenprofil = json.loads(cleaned_output)
+                    
+                    # Speichern
+                    with open(profile_filepath, "w", encoding="utf-8") as f:
+                        json.dump(kundenprofil, f, indent=2, ensure_ascii=False)
+                        
+                    generated_count += 1
+                    
                 except Exception as e:
-                    st.error(f"⚠️ Fehler beim Laden von {filename}: {e}")
-                    continue
+                    st.error(f"❌ Fehler bei der Generierung für {filename}: {e}")
+            else:
+                skipped_count += 1
+            
+            # Fortschrittsbalken updaten
+            progress_bar.progress((i + 1) / len(mail_files))
 
-            # Prompt vorbereiten
-            prompt = f"""
-            Du bekommst eine Liste von Emails im JSON-Format.
-            Erstelle für jede Kundenfirma nur ein Profil.
-
-            Jedes Profil enthält:
-            - Name des Unternehmens
-            - alle eindeutigen Kontakte (Name + Email)
-            - eine Liste der angefragten oder bestellten Produkte
-            - Summary des Email-Verlaufs (max. 8 Sätze). Die Zusammenfassung muss summary heißen.
-
-            Regeln:
-            - Die Kontakte der Firma Innovatek Solutions sollen nicht aufgenommen werden.
-            - Das heißt, eine Kunden-Emailadresse kann nicht auf @innovatek-solutions.de enden.
-            - Gib das Ergebnis ausschließlich als gültiges JSON-Array zurück, ohne Markdown.
-
-            Hier sind die Emails:
-            {json.dumps(emails, ensure_ascii=False, indent=2)}
-            """
-
-            # LLM ausführen
-            result = subprocess.run(
-                ["ollama", "run", MODEL],
-                input=prompt.encode("utf-8"),
-                capture_output=True,
-            )
-            output_text = result.stdout.decode("utf-8").strip()
-
-            # Eventuelle ```json``` Tags entfernen
-            cleaned_output = re.sub(r"```json|```", "", output_text).strip()
-
-            # JSON parsen
-            try:
-                kundenprofil = json.loads(cleaned_output)
-            except json.JSONDecodeError:
-                st.warning(
-                    f"⚠️ JSON-Parsing fehlgeschlagen bei {filename}, Rohtext gespeichert."
-                )
-                kundenprofil = {"raw_output": output_text}
-
-            # Speichern
-            with open(output_file, "w", encoding="utf-8") as f:
-                json.dump(kundenprofil, f, indent=2, ensure_ascii=False)
-
-            st.success(f"✅ Profil gespeichert: `{output_file}`")
-
-        st.success("🎉 Alle Kundenprofile wurden aktualisiert!")
-        st.cache_data.clear()
-        st.rerun()
+        # Abschlussbericht
+        st.success(f"Fertig! ✅ {generated_count} Profile aktualisiert, ⏭️ {skipped_count} übersprungen (da aktuell).")
+        
+        # Seite neu laden, um Änderungen anzuzeigen
+        if generated_count > 0:
+            import time
+            time.sleep(1.5)
+            st.rerun()
 
     if not profiles:
         st.warning("Keine Profile gefunden.")
@@ -746,7 +1138,35 @@ elif page in profiles:
 # -------------------------------
 if page == "KI-Chatbot":
     st.title("💻 KI-Chatbot")
-    st.write("Stelle Fragen zu den Kundenprofilen.")
+    
+    # --- NEUER FILTER-BEREICH ---
+    col_filter1, col_filter2 = st.columns([1, 2])
+    
+    with col_filter1:
+        search_mode = st.radio(
+            "Suche in:", 
+            ["Alle Firmen", "Eine bestimmte Firma"],
+            horizontal=False
+        )
+    
+    active_profiles = profiles  # Standard: Alles
+    
+    with col_filter2:
+        if search_mode == "Eine bestimmte Firma":
+            # Dropdown mit allen verfügbaren Firmen
+            selected_company_chat = st.selectbox(
+                "Welche Firma?", 
+                options=sorted(list(profiles.keys()))
+            )
+            # Filter setzen: Nur diese eine Firma im Context
+            if selected_company_chat in profiles:
+                active_profiles = {selected_company_chat: profiles[selected_company_chat]}
+                st.caption(f"ℹ️ Chatte nur mit Kontext von: **{selected_company_chat}**")
+        else:
+            st.caption("ℹ️ Durchsucht das Wissen zu **allen** gespeicherten Firmen.")
+
+    st.divider()
+
 
     # Chat-Verlauf & State initialisieren
     if "history" not in st.session_state:
@@ -795,7 +1215,7 @@ if page == "KI-Chatbot":
         with st.chat_message("user"):
             st.markdown(prompt)
 
-        antwort = chatbot(prompt, profiles)
+        antwort = chatbot(prompt, active_profiles)
         st.session_state["history"].append(("assistant", antwort))
         with st.chat_message("assistant"):
             st.markdown(antwort)
