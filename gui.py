@@ -1,7 +1,13 @@
 import streamlit as st
+
+# ⚠️ WICHTIG: set_page_config() muss die erste Streamlit-Anweisung sein!
+st.set_page_config(page_title="Kundenportal", page_icon="📊", layout="wide")
+
 import json
 import glob
 import os
+import base64
+import pathlib
 from datetime import datetime
 import ollama
 import email
@@ -15,68 +21,25 @@ import shutil
 import json_repair
 
 # =====================================
-# ⚡ Globale Initialisierung: Profile
+# ⚡ Konstanten & Konfiguration
 # =====================================
 
 UPLOAD_FOLDER = "data"
 EML_MAIL_FOLDER = UPLOAD_FOLDER + "/emails/eml"
 JSON_MAIL_FOLDER = UPLOAD_FOLDER + "/emails/json"
 JSON_PROFILE_FOLDER = UPLOAD_FOLDER + "/profiles/json"
-# Pfad zu Ihren Original-Daten auf dem Server
 SERVER_SOURCE_ROOT = "/home/user2/MDZ-Demonstrator/Kundenmails_Original"
-
-# -------------------------------
-# ⚙️ Sidebar Einstellungen
-# -------------------------------
-st.sidebar.markdown("---")
-st.sidebar.subheader("🧠 KI-Modell")
+MY_DOMAINS = ["innovatek-solutions.de"]
 
 # Mapping: Anzeige-Name -> Ollama-Modell-Tag
-model_map = {
+MODEL_MAP = {
     "Gemma 3 (12B) - Schnell & Neu": "gemma3:12b",
     "Llama 3.3 (70B) - Maximale Intelligenz": "llama3.3:70b",
     "DeepSeek R1 (32B) - Logik & Reasoning": "deepseek-r1:32b",
     "Qwen 2.5 Coder (32B) - Struktur-Experte": "qwen2.5-coder:32b",
 }
 
-model_option = st.sidebar.selectbox(
-    "Modell wählen:",
-    options=list(model_map.keys()),
-    index=0  # Standard: Gemma 3
-)
-
-# Globale Variable setzen
-MODEL = model_map[model_option]
-
-# Info-Box anzeigen
-if "Llama" in model_option:
-    st.sidebar.caption("ℹ️ Sehr mächtig, aber braucht viel RAM.")
-elif "DeepSeek" in model_option:
-    st.sidebar.caption("ℹ️ 'Denkt' vor der Antwort (Chain-of-Thought).")
-elif "Qwen" in model_option:
-    st.sidebar.caption("ℹ️ Sehr gut für striktes JSON-Format.")
-
-# Eigene Domains (für Erkennung von Antwort-Mails)
-MY_DOMAINS = ["innovatek-solutions.de"]
-
 os.makedirs(JSON_PROFILE_FOLDER, exist_ok=True)
-
-# Aktive Unternehmen (Emails vorhanden)
-company_files = glob.glob(os.path.join(JSON_MAIL_FOLDER, "*.json"))
-active_companies = {os.path.splitext(os.path.basename(f))[0] for f in company_files}
-
-# Profiles laden
-profiles = {}
-for profile_path in glob.glob(os.path.join(JSON_PROFILE_FOLDER, "profil_*.json")):
-    profile_name = os.path.splitext(os.path.basename(profile_path))[0].replace(
-        "profil_", ""
-    )
-    if profile_name in active_companies:
-        with open(profile_path, "r", encoding="utf-8") as f:
-            try:
-                profiles[profile_name] = json.load(f)
-            except Exception as e:
-                st.warning(f"⚠️ Fehler beim Laden von {profile_path}: {e}")
 
 
 # -------------------------------
@@ -150,12 +113,14 @@ def process_uploaded_emails(company_folder, output_dir):
                 for part in msg.walk():
                     if part.get_content_type() == "text/plain":
                         charset = part.get_content_charset() or "utf-8"
-                        body += part.get_payload(decode=True).decode(
-                            charset, errors="ignore"
-                        )
+                        payload = part.get_payload(decode=True)
+                        if isinstance(payload, bytes):
+                            body += payload.decode(charset, errors="ignore")
             else:
                 charset = msg.get_content_charset() or "utf-8"
-                body = msg.get_payload(decode=True).decode(charset, errors="ignore")
+                payload = msg.get_payload(decode=True)
+                if isinstance(payload, bytes):
+                    body = payload.decode(charset, errors="ignore")
 
             body_clean = clean_body(body)
 
@@ -263,20 +228,66 @@ def manage_uploaded_emails(company_folder, output_dir):
         process_uploaded_emails(company_folder, output_dir)
 
 
-# 🔹 Profile laden
+# 🔹 Profile laden (Robuste Version)
 @st.cache_data
 def load_profiles():
-    """Lädt alle Kundenprofile aus JSON."""
+    """Lädt alle Kundenprofile und ignoriert kaputte Dateien nicht einfach stillschweigend."""
     profiles = {}
-    for filepath in glob.glob(os.path.join(JSON_PROFILE_FOLDER, "*.json")):
+    
+    # Sicherstellen, dass der Ordner existiert
+    if not os.path.exists(JSON_PROFILE_FOLDER):
+        return {}
+
+    files = glob.glob(os.path.join(JSON_PROFILE_FOLDER, "*.json"))
+    
+    if not files:
+        # Falls wirklich keine Dateien da sind (wurden vielleicht gelöscht?)
+        return {}
+
+    for filepath in files:
+        filename = os.path.basename(filepath)
+        profile = None  # Wichtig: Variable zurücksetzen
+        
         try:
             with open(filepath, "r", encoding="utf-8") as f:
-                data = json.load(f)
-                profile = data[0] if isinstance(data, list) and len(data) > 0 else data
-                company_name = profile.get("company_name", os.path.basename(filepath))
-                profiles[company_name] = profile
+                raw_data = f.read().strip()
+                
+                if not raw_data:
+                    continue # Leere Datei
+
+                # Versuch 1: Normales JSON
+                try:
+                    data = json.loads(raw_data)
+                except json.JSONDecodeError:
+                    # Versuch 2: Reparatur (falls String oder kaputt)
+                    data = json_repair.loads(raw_data)
+
+                # Daten normalisieren (Wir wollen ein Dictionary {})
+                if isinstance(data, list):
+                    if len(data) > 0:
+                        profile = data[0] # Nimm das erste Element aus der Liste
+                elif isinstance(data, dict):
+                    profile = data
+                elif isinstance(data, str):
+                    # Falls es immer noch ein String ist (doppelt kodiert)
+                    profile = json_repair.loads(data)
+                    if isinstance(profile, list) and len(profile) > 0:
+                        profile = profile[0]
+
+                # Profil validieren & speichern
+                if isinstance(profile, dict):
+                    # Firmenname erzwingen (Fallback auf Dateiname)
+                    c_name = profile.get("company_name")
+                    if not c_name:
+                        c_name = filename.replace("profil_", "").replace(".json", "")
+                    
+                    profiles[c_name] = profile
+                else:
+                    st.warning(f"⚠️ Datei '{filename}' enthält kein gültiges Profil-Objekt.")
+
         except Exception as e:
-            st.warning(f"⚠️ Fehler beim Laden von {filepath}: {e}")
+            st.warning(f"❌ Kritischer Fehler bei '{filename}': {e}")
+            
     return profiles
 
 
@@ -294,6 +305,103 @@ def load_emails():
         except Exception as e:
             st.warning(f"⚠️ Fehler beim Laden von {filepath}: {e}")
     return emails
+
+
+# 🔹 Profil-Generierung (zentrale Funktion)
+def generate_profile_from_emails(emails_data, model, limit_emails=30):
+    """
+    Generiert ein Kundenprofil aus Email-Daten mit robuster JSON-Verarbeitung.
+    
+    Args:
+        emails_data: Liste von Email-Objekten (als Dicts)
+        model: Das zu verwendende LLM-Modell
+        limit_emails: Maximale Anzahl der zu analysierenden Emails (für Performance)
+    
+    Returns:
+        dict: Das generierte Kundenprofil
+    
+    Raises:
+        ValueError: Bei ungültigen Eingaben oder Parsing-Fehlern
+    """
+    # Emails begrenzen für bessere Performance
+    if len(emails_data) > limit_emails:
+        emails_data = emails_data[-limit_emails:]
+    
+    # Prompt bauen
+    prompt = f"""Du bist ein professioneller Assistent zur Analyse von Geschäftskommunikation.
+
+Analysiere die folgenden Emails und erstelle ein Kundenprofil im JSON-Format.
+
+WICHTIGE REGELN:
+1. Extrahiere ALLE Kontaktpersonen, die NICHT zu "innovatek-solutions.de" gehören
+2. Kontakte sind Personen mit externen Email-Adressen (z.B. @bergmann-automation.de, @mueller.com, etc.)
+3. Ignoriere ALLE Personen mit @innovatek-solutions.de Adressen - das sind eigene Mitarbeiter
+4. Alle Texte müssen auf DEUTSCH sein
+5. Produkte sind alle erwähnten Produkte, Services oder Dienstleistungen
+
+AUSGABEFORMAT (exakt diese JSON-Struktur):
+{{
+    "company_name": "Name des Kundenunternehmens",
+    "contacts": [
+        {{"name": "Vorname Nachname", "email": "person@kundenfirma.de"}},
+        {{"name": "Weitere Person", "email": "person2@kundenfirma.de"}}
+    ],
+    "products": ["Produkt A", "Service B", "Dienstleistung C"],
+    "summary": "Deutsche Zusammenfassung des Email-Verlaufs in maximal 8 Sätzen."
+}}
+
+BEISPIEL für Kontakte:
+- Von: max.mueller@firma-xy.de → HINZUFÜGEN (externer Kontakt)
+- Von: service@innovatek-solutions.de → IGNORIEREN (eigener Mitarbeiter)
+
+Antworte NUR mit dem JSON-Objekt, keine Einleitung, kein Markdown, keine Erklärungen.
+
+EMAILS:
+{json.dumps(emails_data, ensure_ascii=False)}
+"""
+    
+    # LLM aufrufen mit ollama Python-Bibliothek
+    try:
+        response = ollama.chat(
+            model=model,
+            messages=[
+                {
+                    "role": "user",
+                    "content": prompt
+                }
+            ]
+        )
+        
+        output_text = response["message"]["content"].strip()
+        
+    except Exception as e:
+        raise ValueError(f"Fehler beim LLM-Aufruf: {e}")
+    
+    # Prüfen, ob die Antwort leer ist
+    if not output_text:
+        raise ValueError(f"LLM hat keine Antwort geliefert. Modell: {model}")
+    
+    # JSON-Extraktion
+    json_match = re.search(r"(\{.*\})", output_text, re.DOTALL)
+    
+    if json_match:
+        clean_json_text = json_match.group(1)
+    else:
+        # Kein JSON gefunden
+        raise ValueError(f"Kein JSON-Objekt in der LLM-Antwort gefunden. Erhaltene Antwort: {output_text[:500]}")
+    
+    # JSON reparieren und parsen
+    kundenprofil = json_repair.loads(clean_json_text)
+    
+    # Sicherheits-Check: Ist es wirklich ein Dict?
+    if isinstance(kundenprofil, str):
+        # Manchmal ist es doppelt kodiert -> noch mal parsen
+        kundenprofil = json_repair.loads(kundenprofil)
+    
+    if not isinstance(kundenprofil, dict):
+        raise ValueError(f"Ergebnis ist kein Dictionary, sondern {type(kundenprofil)}")
+    
+    return kundenprofil
 
 
 # 🔹 Chatbot-Funktion (alle Profile)
@@ -321,17 +429,9 @@ Hier sind alle Kundenprofile:
     return response["message"]["content"]
 
 
-# -------------------------------
-# App Layout
-# -------------------------------
-
-st.set_page_config(page_title="Kundenportal", page_icon="📊", layout="wide")
-
-import streamlit as st
-import base64, pathlib
-
-
-
+# =====================================
+# 🎨 UI Setup & Styling
+# =====================================
 
 # etwas Platz lassen, damit der Footer nicht Content überlappt
 st.markdown(
@@ -379,18 +479,42 @@ st.markdown(
 )
 
 
-# # Logos hinzufügen (oben)
-# col1, col2 = st.columns([1, 1])
-# with col1:
-#     st.image(
-#         "Logos/MD_zentrum_hannover_schutzzone_RGB.svg",
-#         width=200,
-#     )
-# with col2:
-#     st.image("Logos/bmwi_logo_de.svg", width=150)
+# =====================================
+# 📊 Daten laden & Session State
+# =====================================
 
+# Profile und Emails laden
 profiles = load_profiles()
 emails = load_emails()
+
+# -------------------------------
+# ⚙️ Sidebar: Modellauswahl
+# -------------------------------
+st.sidebar.markdown("---")
+st.sidebar.subheader("🧠 KI-Modell")
+
+# Modellauswahl mit Session State
+if "model_option" not in st.session_state:
+    st.session_state.model_option = list(MODEL_MAP.keys())[0]
+
+model_option = st.sidebar.selectbox(
+    "Modell wählen:",
+    options=list(MODEL_MAP.keys()),
+    index=list(MODEL_MAP.keys()).index(st.session_state.model_option),
+    key="model_select"
+)
+st.session_state.model_option = model_option
+
+# Aktuelles Modell setzen
+MODEL = MODEL_MAP[model_option]
+
+# Info-Box anzeigen
+if "Llama" in model_option:
+    st.sidebar.caption("ℹ️ Sehr mächtig, aber braucht viel RAM.")
+elif "DeepSeek" in model_option:
+    st.sidebar.caption("ℹ️ 'Denkt' vor der Antwort (Chain-of-Thought).")
+elif "Qwen" in model_option:
+    st.sidebar.caption("ℹ️ Sehr gut für striktes JSON-Format.")
 
 # -------------------------------
 # Sidebar Navigation mit Kacheln
@@ -444,7 +568,8 @@ st.sidebar.markdown("# 👥 Kundenprofile")
 
 # Kacheln für Unternehmen
 for company, profile in profiles.items():
-    contact = profile.get("contacts", [{}])[0]
+    contacts = profile.get("contacts", [])
+    contact = contacts[0] if contacts else {}
     contact_name = contact.get("name", "Kein Kontakt")
     product_count = len(profile.get("products", []))
     contact_email = contact.get("email", "Keine Email")
@@ -503,54 +628,6 @@ if page == "Startseite":
         "> Hinweis: Dies ist ein Software-Demonstrator. Daten werden lokal im Projektordner gespeichert und können auf der Seite **📧 Emails verwalten** komplett gelöscht werden.",
         unsafe_allow_html=True,
     )
-
-
-# -------------------------------
-# Seite: 1 Emails verwalten
-# -------------------------------
-# if page == "Emails verwalten":
-#     st.title("📧 Emails verwalten")
-
-#     os.makedirs(os.path.join(UPLOAD_FOLDER, selected_company), exist_ok=True)
-
-#     st.divider()
-#     st.subheader("📤 Emails hochladen")
-
-#     # Mehrfach-Upload erlauben
-#     uploaded_files = st.file_uploader(
-#         "📎 Emails (.eml) hochladen", type=["eml"], accept_multiple_files=True
-#     )
-
-#     # if uploaded_files:
-#     #     for uploaded_file in uploaded_files:
-#     #         save_path = os.path.join(
-#     #             UPLOAD_FOLDER, selected_company, uploaded_file.name
-#     #         )
-
-#     #         with open(save_path, "wb") as f:
-#     #             f.write(uploaded_file.getbuffer())
-#     #         # st.toast(f"✅ '{uploaded_file.name}' gespeichert in '{selected_company}'")
-
-#     if uploaded_files:
-#         new_uploads = []
-#         for uploaded_file in uploaded_files:
-#             save_path = os.path.join(
-#                 UPLOAD_FOLDER, selected_company, uploaded_file.name
-#             )
-#             with open(save_path, "wb") as f:
-#                 f.write(uploaded_file.getbuffer())
-#             new_uploads.append(uploaded_file.name)
-
-#         # Toast nur einmal für alle neuen Uploads
-#         if new_uploads:
-#             st.toast(
-#                 f"✅ {len(new_uploads)} Datei(en) gespeichert in '{selected_company}'"
-#             )
-
-#     # 🚀 Direkt verarbeiten (nur diesen Firmenordner!)
-#     company_folder = os.path.join(UPLOAD_FOLDER, selected_company)
-#     process_uploaded_emails(company_folder, JSON_MAIL_FOLDER)
-#     manage_uploaded_emails(company_folder, JSON_MAIL_FOLDER)
 
 
 # -------------------------------
@@ -685,91 +762,6 @@ elif page == "KI-Kundenübersicht":
 
     os.makedirs(JSON_PROFILE_FOLDER, exist_ok=True)
 
-    # if st.button("🔄 Kundenprofile aktualisieren"):
-    #     # 1) Cache leeren, damit keine veralteten Daten verwendet werden
-    #     try:
-    #         st.cache_data.clear()
-    #     except Exception:
-    #         pass
-
-    #     # 2) Alte Profile löschen
-    #     removed_profiles = 0
-    #     for p in glob.glob(os.path.join(JSON_PROFILE_FOLDER, "*.json")):
-    #         try:
-    #             os.remove(p)
-    #             removed_profiles += 1
-    #         except Exception:
-    #             pass
-    #     if removed_profiles:
-    #         st.info(f"🗑️ {removed_profiles} bestehende Profil(e) gelöscht")
-
-    #     # 3) Neue Profile aus vorhandenen Email-JSONs generieren
-    #     st.info("Starte Verarbeitung der Emails…")
-
-    #     for filepath in glob.glob(os.path.join(JSON_MAIL_FOLDER, "*.json")):
-    #         filename = os.path.basename(filepath)
-    #         output_file = os.path.join(JSON_PROFILE_FOLDER, f"profil_{filename}")
-
-    #         st.write(f"📥 Verarbeite `{filename}` ...")
-
-    #         # Emails laden
-    #         with open(filepath, "r", encoding="utf-8") as f:
-    #             try:
-    #                 emails = json.load(f)
-    #             except Exception as e:
-    #                 st.error(f"⚠️ Fehler beim Laden von {filename}: {e}")
-    #                 continue
-
-    #         # Prompt vorbereiten
-    #         prompt = f"""
-    #         Du bekommst eine Liste von Emails im JSON-Format.
-    #         Erstelle für jede Kundenfirma nur ein Profil.
-
-    #         Jedes Profil enthält:
-    #         - Name des Unternehmens
-    #         - alle eindeutigen Kontakte (Name + Email)
-    #         - eine Liste der angefragten oder bestellten Produkte
-    #         - Summary des Email-Verlaufs (max. 8 Sätze). Die Zusammenfassung muss summary heißen.
-
-    #         Regeln:
-    #         - Die Kontakte der Firma Innovatek Solutions sollen nicht aufgenommen werden.
-    #         - Das heißt, eine Kunden-Emailadresse kann nicht auf @innovatek-solutions.de enden.
-    #         - Gib das Ergebnis ausschließlich als gültiges JSON-Array zurück, ohne Markdown.
-
-    #         Hier sind die Emails:
-    #         {json.dumps(emails, ensure_ascii=False, indent=2)}
-    #         """
-
-    #         # LLM ausführen
-    #         result = subprocess.run(
-    #             ["ollama", "run", MODEL],
-    #             input=prompt.encode("utf-8"),
-    #             capture_output=True,
-    #         )
-    #         output_text = result.stdout.decode("utf-8").strip()
-
-    #         # Eventuelle ```json``` Tags entfernen
-    #         cleaned_output = re.sub(r"```json|```", "", output_text).strip()
-
-    #         # JSON parsen
-    #         try:
-    #             kundenprofil = json.loads(cleaned_output)
-    #         except json.JSONDecodeError:
-    #             st.warning(
-    #                 f"⚠️ JSON-Parsing fehlgeschlagen bei {filename}, Rohtext gespeichert."
-    #             )
-    #             kundenprofil = {"raw_output": output_text}
-
-    #         # Speichern
-    #         with open(output_file, "w", encoding="utf-8") as f:
-    #             json.dump(kundenprofil, f, indent=2, ensure_ascii=False)
-
-    #         st.success(f"✅ Profil gespeichert: `{output_file}`")
-
-    #     st.success("🎉 Alle Kundenprofile wurden aktualisiert!")
-    #     st.cache_data.clear()
-    #     st.rerun()
-
     if st.button("🔄 Kundenprofile aktualisieren"):
         try:
             st.cache_data.clear()
@@ -827,60 +819,52 @@ elif page == "KI-Kundenübersicht":
                     with open(mail_filepath, "r", encoding="utf-8") as f:
                         try:
                             current_emails = json.load(f)
-                            # Optional: Nur die letzten 20 Emails nehmen
-                            if len(current_emails) > 20:
+                            # Optional: Nur die letzten 30 Emails nehmen
+                            if len(current_emails) > 30:
                                 current_emails = current_emails[-20:]
                         except Exception as e:
                             st.error(f"Dateifehler: {e}")
                             continue
 
                     st.write(f"🧠 {model_option} analysiert Inhalte...")
-                    prompt = f"""
-                    Du bist ein professioneller Assistent für den deutschen Mittelstand.
-                    Analysiere die Kommunikation in den folgenden Emails.
-
-                    Erstelle ein JSON-Profil. 
-                    ⚠️ WICHTIG: 
-                    1. Alle Texte (besonders 'summary' und 'products') MÜSSEN zwingend auf DEUTSCH verfasst sein.
-                    2. Ignoriere bei 'contacts' alle Mitarbeiter von @{MY_DOMAINS}.
-                    3. Nimm nur externe Ansprechpartner auf.
-
-                    Das JSON muss exakt diese Struktur haben:
-                    {{
-                        "company_name": "Name der Firma",
-                        "contacts": [{{ "name": "Vorname Nachname", "email": "email@adresse.de" }}],
-                        "products": ["Produkt A", "Dienstleistung B"],
-                        "summary": "Eine präzise Zusammenfassung des Verlaufs auf Deutsch (max. 8 Sätze)."
-                    }}
-
-                    Antworte AUSSCHLIESSLICH mit dem JSON-Objekt. Keine Einleitung, kein Markdown.
-
-                    Emails:
-                    {json.dumps(current_emails, ensure_ascii=False)}
-                    """
-
+                    
                     try:
-                        result = subprocess.run(
-                            ["ollama", "run", MODEL],
-                            input=prompt.encode("utf-8"),
-                            capture_output=True
+                        # Verwende zentrale Generierungsfunktion
+                        kundenprofil = generate_profile_from_emails(
+                            current_emails, 
+                            MODEL, 
+                            limit_emails=30
                         )
-                        output_text = result.stdout.decode("utf-8").strip()
-
-                        st.write("🔧 Repariere & Speichere JSON...")
                         
-                        # --- 🛠️ HIER IST DER NEUE JSON REPAIR ---
-                        # Entfernt Markdown ```json ... ``` Reste
-                        clean_text = re.sub(r"```json|```", "", output_text).strip()
-                        # json_repair ist viel toleranter als json.loads
-                        kundenprofil = json_repair.loads(clean_text)
+                        # -----------------------------------------------------
+                        # 🛡️ ZUSÄTZLICHER SICHERHEITSFILTER (für den Fall, dass das LLM eigene Domain übersieht)
+                        # -----------------------------------------------------
+                        if "contacts" in kundenprofil and isinstance(kundenprofil["contacts"], list):
+                            original_count = len(kundenprofil["contacts"])
+                            filtered_contacts = []
+                            for contact in kundenprofil["contacts"]:
+                                # Falls contact aus Versehen ein String ist, überspringen
+                                if not isinstance(contact, dict): 
+                                    continue
+                                    
+                                email_addr = contact.get("email", "").lower()
+                                # Nur innovatek-solutions.de rausfiltern, ALLE anderen behalten
+                                if email_addr and not email_addr.endswith("innovatek-solutions.de"):
+                                    filtered_contacts.append(contact)
+                            
+                            kundenprofil["contacts"] = filtered_contacts
+                            
+                            # Debug: Warnung wenn zu viele gefiltert wurden
+                            if original_count > 0 and len(filtered_contacts) == 0:
+                                print(f"⚠️ WARNUNG: Alle {original_count} Kontakte wurden gefiltert für {filename}")
 
+                        # Speichern
                         with open(profile_filepath, "w", encoding="utf-8") as f:
                             json.dump(kundenprofil, f, indent=2, ensure_ascii=False)
                         
                         generated_count += 1
                         status.update(label=f"✅ {filename} fertiggestellt!", state="complete", expanded=False)
-                        
+
                     except Exception as e:
                         status.update(label=f"❌ Fehler bei {filename}", state="error")
                         errors.append(f"{filename}: {e}")
@@ -896,114 +880,6 @@ elif page == "KI-Kundenübersicht":
         if generated_count > 0:
             import time
             time.sleep(1)
-            st.rerun()
-
-
-        # Cache leeren
-        try:
-            st.cache_data.clear()
-        except Exception:
-            pass
-
-        st.info("Prüfe auf Änderungen in den Email-Daten...")
-        
-        # Zähler für Statistik
-        generated_count = 0
-        skipped_count = 0
-        
-        # Fortschrittsbalken initialisieren
-        mail_files = glob.glob(os.path.join(JSON_MAIL_FOLDER, "*.json"))
-        progress_bar = st.progress(0)
-        
-        for i, mail_filepath in enumerate(mail_files):
-            # Dateinamen auflösen
-            filename = os.path.basename(mail_filepath)       # z.B. firma_a.json
-            profile_filename = f"profil_{filename}"          # z.B. profil_firma_a.json
-            profile_filepath = os.path.join(JSON_PROFILE_FOLDER, profile_filename)
-            
-            # Entscheidung: Neu generieren?
-            should_generate = False
-            
-            if not os.path.exists(profile_filepath):
-                # Fall A: Profil existiert noch gar nicht
-                should_generate = True
-                st.write(f"🆕 Erstelle neues Profil für `{filename}` ...")
-            else:
-                # Fall B: Vergleich der Zeitstempel (mtime)
-                mail_mtime = os.path.getmtime(mail_filepath)
-                profile_mtime = os.path.getmtime(profile_filepath)
-                
-                if mail_mtime > profile_mtime:
-                    should_generate = True
-                    st.write(f"🔄 Emails geändert. Aktualisiere `{filename}` ...")
-                else:
-                    should_generate = False
-            
-            # --- Generierung (nur wenn nötig) ---
-            if should_generate:
-                # 1. Emails laden
-                with open(mail_filepath, "r", encoding="utf-8") as f:
-                    try:
-                        current_emails = json.load(f)
-                    except Exception as e:
-                        st.error(f"Fehler bei {filename}: {e}")
-                        continue
-                
-                # OPTIONAL: Hier Emails begrenzen (z.B. letzte 20) um Speed zu erhöhen
-                # current_emails = current_emails[-20:] if len(current_emails) > 20 else current_emails
-
-                # 2. Prompt bauen
-                prompt = f"""
-                Du bekommst eine Liste von Emails im JSON-Format.
-                Erstelle für diese Kundenfirma ein Profil.
-
-                Das Profil muss enthalten:
-                - Name des Unternehmens ("company_name")
-                - Liste der Kontakte (Name + Email)
-                - Liste der Produkte/Themen
-                - Zusammenfassung des Verlaufs ("summary", max 8 Sätze)
-
-                Gib das Ergebnis NUR als JSON zurück.
-                
-                Emails:
-                {json.dumps(current_emails, ensure_ascii=False, indent=2)}
-                """
-                
-                # 3. LLM aufrufen
-                try:
-                    result = subprocess.run(
-                        ["ollama", "run", MODEL],
-                        input=prompt.encode("utf-8"),
-                        capture_output=True
-                        # timeout=120 # Optional: Timeout setzen
-                    )
-                    output_text = result.stdout.decode("utf-8").strip()
-                    
-                    # JSON Cleaning
-                    cleaned_output = re.sub(r"```json|```", "", output_text).strip()
-                    kundenprofil = json.loads(cleaned_output)
-                    
-                    # Speichern
-                    with open(profile_filepath, "w", encoding="utf-8") as f:
-                        json.dump(kundenprofil, f, indent=2, ensure_ascii=False)
-                        
-                    generated_count += 1
-                    
-                except Exception as e:
-                    st.error(f"❌ Fehler bei der Generierung für {filename}: {e}")
-            else:
-                skipped_count += 1
-            
-            # Fortschrittsbalken updaten
-            progress_bar.progress((i + 1) / len(mail_files))
-
-        # Abschlussbericht
-        st.success(f"Fertig! ✅ {generated_count} Profile aktualisiert, ⏭️ {skipped_count} übersprungen (da aktuell).")
-        
-        # Seite neu laden, um Änderungen anzuzeigen
-        if generated_count > 0:
-            import time
-            time.sleep(1.5)
             st.rerun()
 
     if not profiles:
