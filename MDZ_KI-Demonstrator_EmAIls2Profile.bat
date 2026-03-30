@@ -102,37 +102,65 @@ if %errorlevel% neq 0 (
 
 :: ===============================================
 
-:: 2. Ollama prüfen / installieren
+:: 2. Ollama prüfen
 
 :: ===============================================
 
 echo [2/7] Überprüfe Ollama ...
 
+:: Ollama finden: erst PATH, dann Standardpfad
+
+set "OLLAMA_CMD="
+
 where ollama >nul 2>&1
 
-if %errorlevel% neq 0 (
+if %errorlevel% equ 0 (
 
-    echo → Lade Ollama herunter ...
-
-    curl -fsSL https://ollama.ai/download/OllamaSetup.exe -o "%OLLAMA_EXE%"
-
-    echo → Installiere Ollama ...
-
-    start /wait "" "%OLLAMA_EXE%"
-
-    del "%OLLAMA_EXE%"
-
- 
-
-    echo → Schließe Ollama-GUI nach Installation ...
-
-    taskkill /IM "ollama.exe" /F >nul 2>&1
-
-) else (
-
-    echo ✓ Ollama bereits installiert.
+    for /f "delims=" %%i in ('where ollama') do set "OLLAMA_CMD=%%i"
 
 )
+
+if not defined OLLAMA_CMD (
+
+    if exist "%LOCALAPPDATA%\Programs\Ollama\ollama.exe" (
+
+        set "OLLAMA_CMD=%LOCALAPPDATA%\Programs\Ollama\ollama.exe"
+
+    )
+
+)
+
+if not defined OLLAMA_CMD (
+
+    if exist "%ProgramFiles%\Ollama\ollama.exe" (
+
+        set "OLLAMA_CMD=%ProgramFiles%\Ollama\ollama.exe"
+
+    )
+
+)
+
+if not defined OLLAMA_CMD (
+
+    echo ❌ Ollama wurde nicht gefunden.
+
+    echo    Bitte zuerst Ollama installieren: https://ollama.com/download
+
+    pause
+
+    exit /b
+
+)
+
+echo ✓ Ollama gefunden: %OLLAMA_CMD%
+
+
+
+:: Ollama-Server starten, falls nicht bereits aktiv
+
+powershell -NoProfile -Command "if (-not (Get-Process ollama -ErrorAction SilentlyContinue)) { Start-Process '%OLLAMA_CMD%' -ArgumentList 'serve' -WindowStyle Hidden }"
+
+timeout /t 3 /nobreak >nul
 
  
 
@@ -154,7 +182,7 @@ if exist "%INSTALL_DIR%" (
 
  
 
-curl -L -o "%ZIP_PATH%" "%REPO_URL%"
+curl.exe -L -o "%ZIP_PATH%" "%REPO_URL%"
 
 echo → Entpacke Dateien ...
 
@@ -190,7 +218,7 @@ cd /d "%INSTALL_DIR%"
 
 python -m pip install --upgrade pip
 
-pip install -r requirements.txt
+python -m pip install -r requirements.txt
 
  
 
@@ -204,7 +232,7 @@ echo [5/7] Lade LLM-Modell gemma3:12b ...
 
 echo ⚠️  Achtung: ca. 8 GB Download – dies kann dauern.
 
-ollama pull gemma3:12b
+"%OLLAMA_CMD%" pull gemma3:12b
 
  
 
