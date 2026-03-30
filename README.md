@@ -4,68 +4,48 @@ Ein interaktives Tool zur Verwaltung von Kundenmails und -profilen, inklusive KI
 
 ## Voraussetzungen
 
-- **Python 3.8+** (mit pip installiert)
+- **Windows 10/11** (64-Bit)
+- **Python 3.10+** (mit pip)
 - **Ollama** (für lokale LLM-Ausführung)
 - **Git** (zum Klonen des Repositories)
 
 ## Installation
 
-### 1. Ollama installieren (Grundvoraussetzung)
+### 1. Ollama installieren
 
-**Windows:**
-
-- Lade Ollama von [https://ollama.ai](https://ollama.ai) herunter
+- Lade Ollama von [https://ollama.com/download](https://ollama.com/download) herunter
 - Führe das Installationsprogramm aus
 - Öffne eine neue Eingabeaufforderung und teste: `ollama --version`
 
-**macOS:**
-
-```bash
-brew install ollama
-```
-
-**Linux:**
-
-```bash
-curl -fsSL https://ollama.ai/install.sh | sh
-```
-
-### 2. LLM-Modell herunterladen
-
-```bash
-ollama pull gemma3:12b
-```
-
-⚠️ **Wichtig:** Dieser Download ist ca. 8GB groß und kann je nach Internetverbindung längere Zeit dauern.
-
-### 3. Repository klonen
+### 2. Repository klonen
 
 ```bash
 git clone https://github.com/iph-hannover/MDZ-Demonstrator.git
 cd MDZ-Demonstrator
 ```
 
-### 4. Python-Abhängigkeiten installieren
+### 3. Installation und Start (automatisch)
 
-**Schnellinstallation (Windows):**
-Für eine automatische Installation unter Windows kann die mitgelieferte Batch-Datei verwendet werden:
+Doppelklick auf die mitgelieferte Batch-Datei oder in der Eingabeaufforderung:
 
 ```bash
-MDZ_KI-Demonstrator_EmAIls2Profile.bat
+.\MDZ_KI-Demonstrator_EmAIls2Profile.bat
 ```
 
-Das Skript richtet automatisch eine virtuelle Umgebung ein, installiert alle erforderlichen Pakete und startet die Anwendung.
+Das Skript erledigt automatisch:
+- Prüft ob Python und Ollama installiert sind
+- Startet den Ollama-Server (falls nicht aktiv)
+- Installiert alle Python-Abhängigkeiten
+- Lädt das LLM-Modell `gemma3:12b` herunter (~8 GB)
+- Erstellt eine Desktop-Verknüpfung
+- Startet die Anwendung
 
-**Manuelle Installation:**
+### Manuelle Installation (alternativ)
 
 ```bash
-pip install -r requirements.txt
-```
-
-### 5. Anwendung starten
-
-```bash
-streamlit run gui.py
+python -m pip install -r requirements.txt
+ollama pull gemma3:12b
+python -m streamlit run gui.py
 ```
 
 Die Anwendung öffnet sich automatisch im Browser unter `http://localhost:8501`.
@@ -154,22 +134,23 @@ Die Anwendung öffnet sich automatisch im Browser unter `http://localhost:8501`.
 **Ollama läuft nicht:**
 
 ```bash
-# Ollama-Service starten
 ollama serve
 ```
+
+**Ollama nicht im PATH gefunden:**
+
+Die Batch-Datei sucht Ollama automatisch an den üblichen Installationsorten. Falls Ollama trotzdem nicht gefunden wird, prüfe ob es korrekt installiert ist.
 
 **Modell nicht gefunden:**
 
 ```bash
-# Modell erneut herunterladen
 ollama pull gemma3:12b
 ```
 
 **Port bereits belegt:**
 
 ```bash
-# Streamlit auf anderem Port starten
-streamlit run gui.py --server.port 8502
+python -m streamlit run gui.py --server.port 8502
 ```
 
 **Speicherprobleme:**
