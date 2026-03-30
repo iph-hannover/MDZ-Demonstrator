@@ -585,12 +585,11 @@ elif page == "KI-Kundenübersicht":
             """
 
             # LLM ausführen
-            result = subprocess.run(
-                ["ollama", "run", MODEL],
-                input=prompt.encode("utf-8"),
-                capture_output=True,
+            response = ollama.chat(
+                model=MODEL,
+                messages=[{"role": "user", "content": prompt}],
             )
-            output_text = result.stdout.decode("utf-8").strip()
+            output_text = response["message"]["content"].strip()
 
             # Eventuelle ```json``` Tags entfernen
             cleaned_output = re.sub(r"```json|```", "", output_text).strip()
