@@ -166,7 +166,7 @@ powershell -Command "Expand-Archive -Path '%ZIP_PATH%' -DestinationPath '%INSTAL
 
 if exist "%INSTALL_DIR%\MDZ-Demonstrator-main" (
 
-    powershell -Command "Get-ChildItem -Path '%INSTALL_DIR%\MDZ-Demonstrator-main' -Recurse | Move-Item -Destination '%INSTALL_DIR%' -Force"
+    powershell -NoProfile -Command "Get-ChildItem -Path '%INSTALL_DIR%\MDZ-Demonstrator-main' | Move-Item -Destination '%INSTALL_DIR%' -Force"
 
     rd /s /q "%INSTALL_DIR%\MDZ-Demonstrator-main"
 
