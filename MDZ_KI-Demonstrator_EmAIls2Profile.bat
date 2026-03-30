@@ -224,7 +224,7 @@ set "SHORTCUT_STARTMENU=%STARTMENU_PATH%\Programs\%SHORTCUT_NAME%"
 :: Helper-Script zum unsichtbaren Start von PowerShell im TEMP lassen
 (
   echo Set objShell = CreateObject("Wscript.Shell"^)
-  echo objShell.Run "powershell -NoProfile -Command cd '%INSTALL_DIR%'; streamlit run gui.py", 0, False
+  echo objShell.Run "powershell -NoProfile -Command cd '%INSTALL_DIR%'; python -m streamlit run gui.py", 0, False
 ) > "%TEMP%\start_mdz.vbs"
 
 :: Schreibtest auf Desktop (CFA/OneDrive kann blockieren)
@@ -266,7 +266,7 @@ if exist "%TARGET_SHORTCUT%" (
 
 echo [7/7] Starte Anwendung ...
 
-start "" powershell -NoProfile -Command "cd '%INSTALL_DIR%'; streamlit run gui.py"
+start "" powershell -NoProfile -Command "cd '%INSTALL_DIR%'; python -m streamlit run gui.py"
 
  
 
